@@ -1,0 +1,41 @@
+.navbar {
+    display: flex;
+    background-color: #01426a;
+    justify-content: space-between;
+    padding: 1rem 5rem;
+    
+}
+.navbar-nav{
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+}
+.navbar-right{
+    display: flex;
+    align-items: center;
+}
+
+@media screen and (min-width:768px) and (max-width:915px) {
+    .navbar {
+        padding: 1rem 2rem;
+    }
+}
+
+
+@media  screen and (max-width:767px) {
+    .navbar-nav {
+        display:none;
+    }
+    .navbar {
+        padding:1rem 0.5rem
+    }
+    .navbar h1{
+        font-size:25px;
+    }
+    .login{
+        font-size:15px;
+        background-color:#3cb95d;
+        padding:5px 10px;
+        border-radius:5px;
+    }
+}

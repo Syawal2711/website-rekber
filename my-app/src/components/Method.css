@@ -1,0 +1,50 @@
+.method {
+    display: flex;
+    padding: 3rem 6rem;
+    align-items: center;
+}
+
+.method-left,.method-right{
+    flex: 1;
+}
+
+.method-left h1 {
+    color: black;
+    margin-right: 5rem;
+}
+
+.method-right p{
+    color: #545454;
+    padding-left: 3rem;
+    line-height: 2rem;
+    font-size: 1.3rem;
+}
+
+@media  screen and (max-width:767px) {
+    .method{
+        flex-direction:column;
+        padding:1rem
+    }
+    .method-left h1 {
+        font-size:1.5rem;
+        margin-right:0
+    }
+    .method-right p {
+        padding-left:0;
+        font-size:0.8rem;
+        line-height:1rem;
+        padding-top:1rem
+    }
+}
+
+@media screen and (min-width:768px) and (max-width:915px) {
+    .method{
+        padding: 3rem;
+    }
+    .method-left h1 {
+        margin-right:1rem ;
+    }
+    .method-right p {
+        padding-left: 1rem;
+    }
+}

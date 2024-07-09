@@ -1,0 +1,191 @@
+.section {
+    color: black;
+    background-color: #01426a;
+    display: flex;
+    padding: 0 7rem;
+    padding-bottom: 2rem;
+    align-items:center
+}
+
+.page {
+    flex: 1;
+}
+
+.home-left {
+    padding-top: 3rem;
+
+}
+.home-left h1 {
+    line-height: 2rem;
+    padding-bottom: 1.5rem;
+    width: 90%;
+}
+.home-left p {
+    padding-bottom: 1.5rem;
+    width: 70%;
+}
+ .ident select{
+    padding: 8px 3rem 8px 8px;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    margin:0 1rem 10px 0 ;
+
+ }
+
+ .peran select {
+    padding: 8px 2.4rem 8px 8px;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    margin:0 1rem 10px 0 ;
+    
+ }
+
+.form input,option {
+    color:black;
+    padding: 8px 3rem 8px 8px;
+    border: none;
+    border-radius: 5px;
+    margin:0 1rem 10px 0 ;
+}
+
+.buton {
+    display: flex;
+}
+.form button {
+    background-color: #3cb95d;
+    border: none;
+    border-radius: 5px;
+    margin:0 1rem 10px 0;
+    padding: 8px 1.5rem 8px 1.5rem;
+    font-weight: 700;
+    font-size: large;
+    justify-content: center;
+    color: white;
+}
+
+.home-right {
+    display: flex;
+    align-items: center;
+    padding-top: 5rem;
+}
+
+.img img{
+    background-color: #004AAD;
+    border-radius: 100%;
+    padding: 2rem;
+    width: 10rem;
+    height: 10rem;
+    margin:0rem 2rem 0 2rem;
+}
+
+.title h3 {
+    margin-bottom: 3rem;
+}
+
+
+.title p::first-letter {
+    margin-left:-13px ;
+}
+@media screen and (min-width:768px) and (max-width:915px)
+{
+    .section{
+        padding:0 3rem;
+        flex-direction: column;
+    }
+    .img img {
+        margin: 2rem;
+    }
+    .home-right{
+        padding:2rem 0 3rem 0;
+    }
+} @media screen and (min-width:916px) and (max-width:1023px) {
+    .section {
+        padding: 2rem 2rem;
+    }
+    .home-right {
+        padding-top:1rem
+    }
+}
+
+@media  screen and (max-width:767px) {
+    .section{
+        display:flex;
+        flex-direction:column;
+        padding:0 1rem;
+    }
+    .home-left{
+        padding-top:2rem;
+    }
+    .home-left h1 {
+        font-size:2rem;
+        line-height: 2rem;
+        width:90%;
+        padding-bottom:1rem
+    }
+    .home-right {
+        display:flex;
+        flex-direction:column;
+    }
+    .home-left p{
+        width:90%;
+        font-size:13px;
+        padding-bottom:0.6rem
+    }
+    .input-form {
+        display:flex;   
+    }
+    .ident select{
+        padding: 8px 15px 8px 8px;
+        color: #545454;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .peran select {
+        padding: 8px;
+        color: #545454;
+        border: none;
+        border-radius: 5px;
+    }
+    .form input,option {
+        color:#545454;
+        padding: 8px;
+        border: none;
+        border-radius: 5px;
+        margin:0 1rem 10px 0 ;
+    }
+    .form button {
+        padding : 8px;
+    }
+
+    .home-right{
+        align-items:start;
+        padding-top:4rem
+    }
+
+    .img img {
+        margin:0;
+        margin-bottom:2rem;
+        padding:1rem;
+    }
+
+    .title {
+        margin-bottom:2rem
+    }
+
+    .title h3 {
+        margin-bottom:1rem;
+    }
+
+    .title p {
+        font-size:13px;
+        margin-left:1rem;
+        width:80%;
+        margin-bottom:3px
+    }
+}
+
+
+
