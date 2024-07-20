@@ -53,12 +53,14 @@
 .buton {
     display: flex;
 }
+
+  
 .form button {
     background-color: #3cb95d;
     border: none;
     border-radius: 5px;
     margin:0 1rem 10px 0;
-    padding: 8px 1.5rem 8px 1.5rem;
+    padding: 8px 1.5rem;
     font-weight: 700;
     font-size: large;
     justify-content: center;

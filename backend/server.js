@@ -5,10 +5,10 @@ const authRoutes = require('./routes/auth')
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors())
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors());
 
-app.use('/auth',authRoutes)
+app.use('/auth',authRoutes);
 
 const port = 3001;
 app.listen(port, () => {

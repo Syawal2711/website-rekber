@@ -20,7 +20,11 @@ function App() {
               <TransactionDetail/>
             </PrivateRoute>
           }/>
-          <Route path='/transaksi/:transaksiId' element={<Transaksi/>}/>
+          <Route path='/transaksi/:transaksiId' element={
+            <PrivateRoute>
+              <Transaksi/>
+            </PrivateRoute>
+          }/>
           <Route path='/register' element={<Register/>}/>
           <Route path='*' element={<Navigate to='/login'/>}/>
         </Routes>

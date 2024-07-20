@@ -8,13 +8,12 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 
 
+
 const ACCESS_TOKEN_SECRET = process.env.ACCSESS_TOKEN_SECRET;
 // Middleware untuk mengautentikasi token akses
 exports.authenticateToken= function(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  console.log('authHeader:',authHeader);
-  console.log('token',token)
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
@@ -126,35 +125,56 @@ exports.login = async (req, res) => {
     }
   };
 
-exports.transactions = async(req,res) => {
-    const {email,peran,product,amount,description,beridentitas,biayaAdmin,adminFee,emailDetail} = req.body;
-    const shortUUID = uuidv4().substr(0, 6)
-    const query = 'INSERT INTO transactions (transaction_id, buyer_email, seller_email,product, amount,description, beridentitas, admin_fee, admin_paid_by) VAlUES (?,?,?,?,?,?,?,?,?)'
-    try {
-      if(peran === 'Penjual') {
-     await db.execute(query,[shortUUID,email,emailDetail,product,amount,description,beridentitas,adminFee,biayaAdmin])
-     return res.json({message: 'Berhasil Membuat Transakso'})
-    }else{
-      await db.execute(query,[shortUUID,emailDetail,email,product,amount,description,beridentitas,adminFee,biayaAdmin])
-      return res.json({message: 'Berhasil Membuat Transaksi'})
+  exports.transactions = async (req, res) => {
+  const { email, peran, product, amount, description, beridentitas, biayaAdmin, adminFee, emailDetail } = req.body;
+  const shortUUID = uuidv4().substr(0, 6);
+  
+  const query = 'INSERT INTO transactions (transaction_id, buyer_email, seller_email, product, amount, description, beridentitas, admin_fee, admin_paid_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+  try {
+    let buyerEmail, sellerEmail;
+    if(peran === 'Pembeli'){
+      buyerEmail = emailDetail;
+      sellerEmail = email;
     }
-    } catch (error) {
-      console. log('gagal mengeksekusi data',error)
-      res.status(500)
-    }
-  };
+    if (peran === 'Penjual') {
+      sellerEmail = emailDetail;
+      buyerEmail = email;
+      console.log(1,buyerEmail,sellerEmail)
+    } 
+    await db.execute(query, [shortUUID, buyerEmail, sellerEmail, product, amount, description, beridentitas, adminFee, biayaAdmin]);
+    return res.json({ idTrx: shortUUID });
+  } catch (error) {
+    console.error('Gagal mengeksekusi transaksi:', error);
+    return res.status(500).json({ error: 'Kesalahan server internal' });
+  }
+};
 
 exports.tranaksionId = async (req,res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   try {
     const [result] = await db.execute('SELECT * FROM transactions WHERE transaction_id = ?',[id]);
     if(result.length === 0 ) {
-      return res.status(4).json({message: 'Transaksi tidak ditemukan'});
+      return res.status(404).json({message: 'Transaksi tidak ditemukan'});
     }
     res.json(result[0]);
   } catch (error) {
     console.log('Error:',error)
-    res.status(500).json({message: 'Gagal mengambil data dari database'})
+    return res.status(500).json({message: 'Gagal mengambil data dari database'})
+  }
+}
+
+exports.agreed = async (req,res) => {
+  const {id} = req.params;
+  const {field} = req.body;
+  console.log(id,field)
+  const query = `UPDATE transactions SET ${field} = ? WHERE transaction_id = ?`;
+  try {
+    await db.execute(query,[true,id])
+    return res.status(200).send('berhasill browwww')
+  } catch (error) {
+    console.log('Error:',error)
+    return res(500).json({message: 'ada yang salah'})
   }
 }
 

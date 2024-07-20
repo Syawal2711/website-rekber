@@ -8,30 +8,37 @@ const Login = () => {
   const message = location.state?.message;
 
   const [email,setEmail] = useState('');
+  const [loading, setLoading] = useState(false)
   const [password,setPassword] = useState('');
   const [errorMsg,setErrorMsg] = useState('')
 
   const navigate = useNavigate()
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://192.168.57.128:3001/auth/login', {
-        email,
-        password
-      })
-      const {accessToken} = response.data;
-      localStorage.setItem('accessToken',accessToken);
-      console.log(accessToken)
-      navigate('/detail');
-    } catch (error) {
-      if(error.response && error.response.data) {
-        setErrorMsg(error.response.data.message)
-      }
-      else{
-        setErrorMsg('Ada yang salah coba lagi nanti')
-      }
-    }
+    setLoading(true)
+    setTimeout(async () => {
+      try {
+        const response = await axios.post('/auth/login', {
+          email,
+          password
+        })
+        const {accessToken} = response.data;
+        localStorage.setItem('accessToken',accessToken);
+        console.log(accessToken)
+        navigate('/detail');
+      } catch (error) {
+        if(error.response && error.response.data) {
+          setErrorMsg(error.response.data.message)
+        }
+        else{
+          setErrorMsg('Ada yang salah coba lagi nanti')
+        }
+      }  
+      setLoading(false)
+    },2000
+  )
+  
   }
   return (
     <div className='container-register'>
@@ -53,7 +60,7 @@ const Login = () => {
           {errorMsg && <p style={{color: 'red'}}>{errorMsg}</p>}
         </div>
         <div className='submit'>
-        <button type='submi'>Masuk</button>
+        <button type='submi' disabled={loading}>{loading ? <div className='spinner'></div> : 'Masuk'}</button>
         <Link to='/forgotpassword' className='forgot'>Lupa Password</Link>
         </div>
         <div className='login-submit'>

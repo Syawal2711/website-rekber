@@ -1,12 +1,12 @@
 .container-transaksi, .trx-detail {
-    width: 40rem;
+    width: 30rem;
     margin:3rem auto;
     border-radius: 10px;
-    border: 1px solid #545454;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.50);
+    padding: 0.5rem 0;
 }
 
-.container-transaksi h1 {
+.container-transaksi h1 div{
     color:black;
     font-size:2rem;
 }
@@ -17,19 +17,22 @@
 }
 .container-transaksi .judul p {
     color: #545454;
+    
+}
+.container-transaksi .p {
+    text-align:center;
+    align-items: center;
 }
 
 .container-transaksi .p p{
-    text-align: center;
-    font-size:1.3rem;
-    color:black;
+    font: size 1.2em;
+    color: #01426a;
 }
 
 .container-transaksi .proses {
     border: 1px solid #01426a;
     border-radius: 5px;
     margin :  1rem 4rem 2rem 4rem;
-    height: 13rem;
     padding: 1rem;
     position:relative;
 }
@@ -37,18 +40,19 @@
 .container-transaksi .proses h4 {
     color:#01426a;
     font-size:1.5rem;
-    padding-bottom:1rem
 }
 
 .container-transaksi .proses p {
-    color:#545454;
+    color: #01426a;
+    font-size:0.9rem;
+    margin-top:1rem;
     width:90%;
 }
 
 .button-agree {
     display:flex;
     gap:1rem;
-    margin-top:2.5rem
+    margin-top:2rem
 }
 
 .button-agree .setuju{
@@ -57,15 +61,15 @@
 
 .button-agree button,.button-payment button {
     width:100%;
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius:5px;
-    font-size:1.3rem;
-    font-weight:700;
+    font-size:1rem;
+    font-weight:500;
     border:none;
 }
 
 .button-payment button {
-    margin-top:2.5rem;
+    margin-top:2rem;
     width: 50%;
 }
 
@@ -99,7 +103,7 @@
 
 .trx-detail .trx p {
     color: #545454;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
 }
 
 .stepper span {
@@ -111,4 +115,9 @@
     padding: 0 4rem
 }
 
+.trx-detail .result {
+    padding:  1rem 4rem 0 4rem;
+    border-top: 1px solid #545454;
+    margin: 1rem 2rem 0 2rem
+}
 

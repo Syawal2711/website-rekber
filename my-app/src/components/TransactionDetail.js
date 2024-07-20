@@ -11,40 +11,44 @@ const TransactionDetail = () => {
     const accessToken = localStorage.getItem('accessToken')
     const decodedToken = jwtDecode(accessToken)
 
-    const email = decodedToken.email
-    const [peran, setPeran] = useState(formData.peran || '');
+    const [peran, setPeran] = useState(formData.peran || 'Penjual');
+    const [loading, setLoading] = useState(false)
     const [product, setProduct] = useState(formData.product || '');
     const [amount, setAmount] = useState(formData.amount || '');
     const [description, setDescription] = useState(formData.description || '');
-    const [beridentitas, setBeridentitas] = useState(formData.beridentitas || '');
+    const [beridentitas, setBeridentitas] = useState(formData.beridentitas || 'Ya');
     const [biayaAdmin, setBiayaAdmin] = useState('Pembeli');
     const [adminFee, setAdminFee] = useState(0)
     const [emailDetail,setEmailDetail] = useState('')// Sesuaikan nilai default jika diperlukan
-
-    const handleSubmit = async (e) => {
+    const email = decodedToken.email;
+    console.log(email,emailDetail,peran)
+    const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('AccessToken:',accessToken)
-        try {
-            const response = await axios.post('http://192.168.57.128:3001/auth/transactions',{
-                email,
-                peran,
-                product,
-                amount,
-                description,
-                beridentitas,
-                biayaAdmin,
-                adminFee,
-                emailDetail
-            },{
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            })
-            console.log(response.data)
-            navigate('/')
-            } catch (err) {
-            console.log('Ada yang salah:', err)
-        }
+        setLoading(true)
+        setTimeout( async () => {
+            try {
+                const response = await axios.post('/auth/transactions',{
+                    email,
+                    peran,
+                    product,
+                    amount,
+                    description,
+                    beridentitas,
+                    biayaAdmin,
+                    adminFee,
+                    emailDetail
+                },{
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                })
+                navigate(`/transaksi/${response.data.idTrx}`)
+                } catch (err) {
+                console.log('Ada yang salah:', err)
+            }
+            setLoading(false)
+        }, 2000)
+        
     }
     useEffect(() => {
         const calculateAdminFee = () => {
@@ -108,7 +112,7 @@ const TransactionDetail = () => {
         const amountValue = parseFloat(amount);
         if (isNaN(amountValue)) {
             return 0;
-        }
+        } 
 
         switch (biayaAdmin) {
             case 'Penjual' : return amountValue - adminFee;
@@ -206,7 +210,7 @@ const TransactionDetail = () => {
                 </div>
                 </div>
                 
-                <button type='submit'>Buat Rekber</button>
+                <button type='submit' disabled={loading}>{loading ? <div className= 'spinner'></div> : 'Buat Transaksi'}</button>
             </form>
             </div>
             </div>

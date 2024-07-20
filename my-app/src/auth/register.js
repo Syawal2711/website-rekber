@@ -8,11 +8,13 @@ const Register = () => {
   const [password,setPassword] = useState('');
   const [confirmPassword,setConfirmPassword] = useState('');
   const [errorMsg,setErrorMsg] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true)
     if(password.length <= 7 ) {
       setErrorMsg('Password Anda Terlalu Pandek!');
       return;
@@ -21,21 +23,27 @@ const Register = () => {
       setErrorMsg('Password Dan Confirm Password Tidak Sama!');
       return;
     }
-    try {
-      const response = await axios.post('http://192.168.57.128:3001/auth/register', {
-        email,password
-      })
-      navigate('/login', {state: {
-        message: 'Berhasil,cek email anda untuk mengaktifkan akun Anda'
-      }})
-    } catch (error) {
-      if(error.response && error.response.data){
-        setErrorMsg(error.response.data.message)
+    setTimeout(async() => {
+      try {
+        const response = await axios.post(`/auth/register`,{
+          email,password
+        }, {
+          credentials: 'include'
+        })
+        navigate('/login', {state: {
+          message: 'Berhasil,cek email anda untuk mengaktifkan akun Anda'
+        }})
+      } catch (error) {
+        if(error.response && error.response.data){
+          setErrorMsg(error.response.data.message)
+        }
+        else {
+          setErrorMsg('Ada yang salah coba lagi nanti')
+        }
       }
-      else {
-        setErrorMsg('Ada yang salah coba lagi nanti')
-      }
-    }
+      setLoading(false)
+    },2000)
+    
   }
   return (
     <div className='container-register'>
@@ -60,7 +68,7 @@ const Register = () => {
           {errorMsg && <p style={{color: 'red'}}>{errorMsg}</p>}
         </div>
         <div className='submit'>
-        <button type='submit'>Buat Akun</button>
+        <button type='submit' disabled ={loading}>{loading ? <div className='spinner'></div> : 'Buat Akun'}</button>
         </div>
         <div className='login-submit'>
         <p>Atau</p>
