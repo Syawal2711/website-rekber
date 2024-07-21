@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
-import { Stepper,Step } from 'react-form-stepper'
+import { Stepper,Step } from 'react-form-stepper';
+import Modal from './Modal.js';
 import './RoomTrx.css';
 
 
@@ -18,7 +19,7 @@ const RoomTrx = () => {
   const email = decodedToken.email;
   const [buyerAgree,setBuyerAgree] = useState(false);
   const [sellerAgree,setSellerAgree] = useState(false);
-  console.log(transaksi)
+  const [modalShow, setModalShow] = useState(false)
   
 
   useEffect(() => {
@@ -167,13 +168,18 @@ const RoomTrx = () => {
         {transaksi.seller_email === email && (
           <div>
           <h4>Setujui Transaksi</h4>
-         <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}</p>
+          {sellerAgree && <p>Anda sudah meneyetujui transaksi ini menunggu persetujuan dari pihak Pembeli</p>}
+          {!sellerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Apabila anda telah setuju anda sudah tidak bisa lagi mengubah transaksi kecuali Pembeli mengubah transaksi lagi.</p>}
          <div className = 'button-agree'>
           <div className='setuju'>
             {!sellerAgree && <button onClick={agreeSeller}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
           </div>
           <div className='ubah'>
-          <button>Ubah</button>
+            {!sellerAgree && <button onClick={ () => setModalShow(true)}>Ubah</button>}
+            <Modal
+              show={modalShow}
+              onHide={() => setModalShow(false)}
+            />
           </div>
          </div>
         </div>
@@ -181,13 +187,18 @@ const RoomTrx = () => {
         {transaksi.buyer_email === email && (
           <div>
             <h4>Setujui Transaksi</h4>
-           <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}</p>
+            {buyerAgree && <p>Anda sudah meneyetujui transaksi ini menunggu persetujuan dari pihak pembeli</p>}
+            {!buyerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Apabila anda telah setuju anda sudah tidak bisa lagi mengubah transaksi kecuali penjual mengubah transaksi lagi.</p>}
            <div className = 'button-agree'>
             <div className='setuju'>
-              {!buyerAgree && <button onClick={agreeBuyer} disabled={loading}>{loading ? <div className='spinner'></div> : 'Setuju'}</button>}
+            {!buyerAgree && <button onClick={agreeBuyer}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
             </div>
             <div className='ubah'>
-            <button>Ubah</button>
+            {!buyerAgree && <button onClick={ () => setModalShow(true)}>Ubah</button>}
+            <Modal
+              show={modalShow}
+              onHide={() => setModalShow(false)}
+            />
             </div>
            </div>
           </div>
