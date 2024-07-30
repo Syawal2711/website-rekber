@@ -35,6 +35,7 @@ function Home() {
     };
 
     return (
+        <div style={{backgroundColor:'#01426a'}}>
         <div id="home" className="section">
             <div className='page home-left'>
                 <h1>Jangan Pernah Membeli Atau Menjual Barang Secara Online Tanpa Menggunakan Syawalrekber.com</h1>
@@ -95,6 +96,7 @@ function Home() {
                     <p>5.Syawalrekber.com Melakukan Pembayaran Ke Penjual</p>
                 </div>
             </div>
+        </div>
         </div>
     );
 }

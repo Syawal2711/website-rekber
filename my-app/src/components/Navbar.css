@@ -2,8 +2,12 @@
     display: flex;
     background-color: #01426a;
     justify-content: space-between;
-    padding: 1rem 5rem;
+    padding: 1rem 7rem;
     
+}
+
+.navbar h1 {
+    font-size: 1.5rem;
 }
 .navbar-nav{
     display: flex;

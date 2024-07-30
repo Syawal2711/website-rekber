@@ -6,7 +6,9 @@ require('dotenv').config()
 const db = require('../config/db')
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
-
+const { auth } = require('googleapis/build/src/apis/abusiveexperiencereport');
+const axios = require('axios')
+const path = require('path')
 
 
 const ACCESS_TOKEN_SECRET = process.env.ACCSESS_TOKEN_SECRET;
@@ -167,7 +169,6 @@ exports.tranaksionId = async (req,res) => {
 exports.agreed = async (req,res) => {
   const {id} = req.params;
   const {field} = req.body;
-  console.log(id,field)
   const query = `UPDATE transactions SET ${field} = ? WHERE transaction_id = ?`;
   try {
     await db.execute(query,[true,id])
@@ -178,10 +179,97 @@ exports.agreed = async (req,res) => {
   }
 }
 
+exports.updateState = async (req,res) => {
+  const {id} = req.params
+  const {step} = req.body;
+  console.log(step)
+  const query = `UPDATE transactions SET step = ? WHERE transaction_id = ?`;
+  try {
+    await db.execute(query,[step,id])
+    return res.status(200).send('succes')
+  } catch (error) {
+    console.log('Error:',error)
+  }
+}
+
+exports.change = async (req,res) => {
+  const {id} =req.params;
+  const {beridentitas,admin_paid_by, amount, alasan} = req.body;
+  const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ? WHERE transaction_id
+ = ?`;
+  try {
+    await db.execute(query,[amount,beridentitas,admin_paid_by,id])
+    console.log('berhasill')
+    return res.status(200).send('succes change data')
+  } catch (error) {
+    console.log('Error:',error)
+  }
+}
+
+exports.invoice = async (req,res) => {
+  const {id, amount} = req.body;
+  try {
+    const response = await axios({
+      method: 'post',
+      url: 'https://api.xendit.co/v2/invoices/',
+      auth: {
+        username: process.env.XENDIT_KEY,
+        password: ''
+      },
+      data: {
+        external_id:id,
+        amount,
+        success_redirect_url: `https://improved-goggles-q774qx465x7qfxw6q-3000.app.github.dev/transaksi/${id}`,
+        failure_redirect_url: "https://www.google.com",
+      }
+    });
+    console.log(response.data.invoice_url)
+    res.status(200).json(response.data.invoice_url);
+  } catch (error) {
+    res.status(500).json({error: error.message})
+  }
+}
+
+exports.findInvoice = async (req,res) => {
+  const {id} = req.body
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://api.xendit.co/v2/invoices/${id}`,
+      auth: {
+        username: process.env.XENDIT_KEY,
+        password: ''
+      }
+    })
+    res.status(200).json(response.data)
+  } catch (error) {
+    res.status(500).json({error: error.message})
+  }
+}
+
+exports.identities = async (req, res) => {
+   try {
+    const images = req.files['files'];
+    const documents = req.files['files1'];
+
+    const imagePaths = images.map(file => file.path);
+    const documentPaths = documents.map(file => file.path);
+
+    // Simpan informasi file ke database
+    const sql = 'INSERT INTO uploads (images, documents) VALUES (?, ?)';
+    db.execute(sql, [JSON.stringify(imagePaths), JSON.stringify(documentPaths)], (err, result) => {
+      if (err) throw err;
+      console.log('ident masuk')
+      res.status(200).json({
+        message: 'Files uploaded successfully',
+        data: result
+      });
+    });
+   } catch (error) {
+    res.status(500).json({ message: 'File upload failed', error: err.message });
+   }
+};
+
 exports.tes = async(req,res) => {
   res.send('helllo world')
 }  
-
-exports.protected = async (req, res) => {
-    res.json({ message: 'Ini adalah data yang dilindungi.' });
-  }

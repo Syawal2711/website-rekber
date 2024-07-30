@@ -19,6 +19,7 @@
     "express": "^4.19.2",
     "googleapis": "^140.0.1",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
     "mysql-client": "^0.3.0",
     "mysql2": "^3.10.1",
     "node-fetch": "^3.3.2",

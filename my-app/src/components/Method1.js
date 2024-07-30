@@ -10,7 +10,7 @@ import './Method1.css'
 const Method1 = () => {
   return (
     <>
-    <div className='img-container'>
+    <div id='tutorial' className='img-container'>
         <div className='img-image'>
             <img src={img1} alt='img1'/>
             <p>1. Penjual Dan Pembeli Menyetujui Transaksi</p>
@@ -41,7 +41,7 @@ const Method1 = () => {
         offset={-70}
         duration={500}
         >
-        <button>Buat Rekber</button>
+        <button style={{marginTop:'2rem'}}>Buat Rekber</button>
         </Link>
         </div>
     </>

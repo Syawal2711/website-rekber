@@ -1,0 +1,12 @@
+.footer .link {
+     font-size:0.9rem;
+     text-decoration:none
+}
+
+.footers {
+    line-height: 1.5rem;
+}
+
+.footers p {
+    margin-bottom: 2rem;
+}

@@ -1,23 +1,20 @@
 .method {
-    display: flex;
-    padding: 3rem 6rem;
+    width:60rem;
+    margin:0 auto;
     align-items: center;
+    display:flex
 }
 
-.method-left,.method-right{
-    flex: 1;
-}
 
-.method-left h1 {
-    color: black;
-    margin-right: 5rem;
+.method-left {
+    flex:0 0 40%;
+    justify-content: center;
+    align-items: center;
 }
 
 .method-right p{
     color: #545454;
-    padding-left: 3rem;
-    line-height: 2rem;
-    font-size: 1.3rem;
+    font-size: 1rem;
 }
 
 @media  screen and (max-width:767px) {

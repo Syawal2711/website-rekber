@@ -78,10 +78,10 @@ const pricingData = [
 
 const ListFee = () => {
   return (
-    <div className='sliders'>
+    <div id='list-fee' className='sliders'>
       <h1>Biaya Transaksi</h1>
       <div className='parag'>
-      <p>Kami memberikan tariff biaya termurah se Indonesia, dengan biaya mulai dari 5 ribu.</p>
+      <p>Kami memberikan tarif biaya termurah se Indonesia, dengan biaya mulai dari 5 ribu.</p>
       </div>
     <Swiper
       spaceBetween={10}
@@ -98,7 +98,7 @@ const ListFee = () => {
           spaceBetween: 20,
         },
         1024: {
-          slidesPerView: 4,
+          slidesPerView: 3,
           spaceBetween: 30,
         },
       }}
@@ -116,7 +116,7 @@ const ListFee = () => {
               <span className="pricing-price">{item.price}</span>
             </div>
             <div className="pricing-footer">
-              <button className="pricing-button">Transaksi Sekarang</button>
+              <button style={{border:'none'}} className="pricing-button">Transaksi Sekarang</button>
             </div>
           </div>
           </div>

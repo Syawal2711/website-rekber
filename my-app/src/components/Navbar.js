@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-scroll';
+import { Link as Link1 } from 'react-router-dom'
 import './Navbar.css'
 
 function Navbar() {
     return (
         <nav className="navbar">
-          <h1>Syawalrekber.com</h1>
+          <h1 style={{fontSize:'1.5rem'}}>Syawalrekber.com</h1>
             <div className="navbar-nav">
                 <div className="nav-item">
                     <Link
@@ -22,31 +23,43 @@ function Navbar() {
                 <div className="nav-item">
                     <Link
                         activeClass="active"
-                        to="about"
+                        to="tutorial"
                         spy={true}
                         smooth={true}
                         offset={-70}
                         duration={500}
                     >
-                        About
+                        Tata Cara
                     </Link>
                 </div>
                 <div className="nav-item">
                     <Link
                         activeClass="active"
-                        to="services"
+                        to="list-fee"
                         spy={true}
                         smooth={true}
                         offset={-70}
                         duration={500}
                     >
-                        Services
+                        Biaya Transaksi
                     </Link>
                 </div>
                 <div className="nav-item">
                     <Link
                         activeClass="active"
-                        to="contact"
+                        to="faq"
+                        spy={true}
+                        smooth={true}
+                        offset={-70}
+                        duration={500}
+                    >
+                        FAQ
+                    </Link>
+                </div>
+                <div className="nav-item">
+                    <Link
+                        activeClass="active"
+                        to="footer"
                         spy={true}
                         smooth={true}
                         offset={-70}
@@ -56,10 +69,17 @@ function Navbar() {
                     </Link>
                 </div>
             </div>
-            <div className='navbar-right'>
+            <div  style={{gap:'1rem'}} className='navbar-right'>
               <div className='login'>
-              <Link to='/login'>Login</Link>
-              </div>      
+              <Link1 to='/login' style={{textDecoration:'none'}}>Login</Link1>
+              </div>
+              <Link1 to='/register' style={{backgroundColor:'#3cb95d',
+                padding:'8px 1.5rem',
+                fontSize:'large',
+                fontWeight:700,
+                borderRadius:'5px',
+                textDecoration:'none'
+              }}>Buat Akun</Link1>      
               </div>
         </nav>
     );

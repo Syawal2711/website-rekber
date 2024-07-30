@@ -3,8 +3,12 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { Stepper,Step } from 'react-form-stepper';
-import Modal from './Modal.js';
 import './RoomTrx.css';
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+import Typography from '@mui/material/Typography';
 
 
 const RoomTrx = () => {
@@ -13,14 +17,27 @@ const RoomTrx = () => {
   const {transaksiId} = useParams();
   const [transaksi,setTransaksi] = useState(null);
   const [loading,setLoading] = useState(false)
-  const [steps,setSteps] = useState(null);
+  const [steps,setSteps] = useState(0);
   const token = localStorage.getItem('accessToken');
   const decodedToken = jwtDecode(token)
   const email = decodedToken.email;
-  const [buyerAgree,setBuyerAgree] = useState(false);
-  const [sellerAgree,setSellerAgree] = useState(false);
-  const [modalShow, setModalShow] = useState(false)
-  
+  const [buyerAgree,setBuyerAgree] = useState(0);
+  const [sellerAgree,setSellerAgree] = useState(0);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [changeData,setChangeData] = useState({adminFee:'',
+    amount:'',
+    identitas:'',
+    alasan:''
+  })
+  const [files,setFiles] = useState([]);
+  const [files1,setFiles1] = useState([])
+  console.log(files)
+  console.log(sellerAgree,buyerAgree)
+  console.log(transaksi)
+
+ 
 
   useEffect(() => {
     const fetchTransaction = async () => {
@@ -41,32 +58,138 @@ const RoomTrx = () => {
   if(token) {
     fetchTransaction();
   }
-  }, [token,transaksiId,steps]);
+  }, [token,transaksiId]);
+
 
   const updateState = async (field) => {
-    console.log(field)
     setLoading(true);
-    console.log(transaksiId)
     try {
       await axios.patch(`/auth/agreed/${transaksiId}`,{ field }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (field === 'buyerAgreed') {
-        setBuyerAgree(true);
-        console.log('buyerrr')
-      } else if (field === 'sellerAgreed') {
-        setSellerAgree(true);
-        console.log('seller')
+      console.log(buyerAgree,sellerAgree)
+      if(field === 'buyerAgreed') {
+        setBuyerAgree(1)
       }
-      setSteps(steps + 1);
+      if (field === 'sellerAgreed') {
+        setSellerAgree(1);
+        }
+      setLoading(false)
     } catch (error) {
       console.error('Error updating state:', error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
+
+ useEffect(() => {
+    if(buyerAgree && sellerAgree && steps === 0) {
+      updateSteps();
+      console.log('masukkkk')
+  }
+},[buyerAgree,sellerAgree,steps])
+
+  const updateSteps = async() => {
+      try {
+          const NewStep = steps + 1;
+        await axios.patch(`/auth/updateState/${transaksiId}`, {step : NewStep}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setSteps(NewStep)
+      } catch (error) {
+        console.log('Error:',error)
+      }
+  }
+
+  const handleChangeIdentity = (e) => {
+    // Mengonversi FileList menjadi array
+    setFiles(Array.from(e.target.files));
+  };
+
+  const handleChangeIdentity1 = (e) => {
+    // Mengonversi FileList menjadi array
+    setFiles1(Array.from(e.target.files));
+  };
+
+  const handleIdentity = async(e) => {
+    e.preventDefault();
+    setLoading(true)
+    const formData = new FormData();
+
+    // Menambahkan file ke FormData jika ada file
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
+      files1.forEach((file) => {
+        formData.append('files1',file);
+      })
+
+      formData.append('filesId',transaksiId)
+      // Menampilkan isi FormData
+      formData.forEach((value, key) => {
+        console.log(`${key}: ${value.name}`);
+      });
+      try {
+        // Mengirim data menggunakan Axios
+        const response = await axios.post('/auth/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log(response.data)
+        alert('tessss')
+        setLoading(false)
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+  };
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.patch(`/auth/change/${transaksiId}`, {
+        beridentitas : changeData.identitas,
+        admin_paid_by : changeData.adminFee,
+        amount : changeData.amount,
+        alasan : changeData.alasan
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      console.log(response)
+    } catch (error) {
+      console.log('Error:',error)
+    }
+  }
+
+  const handlePayment = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    try {
+      const response = await axios.post('/auth/invoice',{
+        id:transaksiId,
+        amount: transaksi.amount
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      window.location.href = response.data;
+      setLoading(false)
+    } catch (error) {
+      console.log('Error:',error)
+    }
+  }
+
+  const handleChange = (e) => {
+    const {name,value} = e.target;
+    setChangeData({
+      ...changeData,
+      [name]: value
+  })
+  }
 
   const agreeBuyer = () => {
     updateState('buyerAgreed');
@@ -74,6 +197,18 @@ const RoomTrx = () => {
 
   const agreeSeller = () => {
     updateState('sellerAgreed');
+  };
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '25rem',
+    bgcolor: 'background.paper',
+    borderRadius: '5px',
+    boxShadow: 24,
+    p: 4,
   };
 
    const totalPembeli = () => {
@@ -135,7 +270,7 @@ const RoomTrx = () => {
         disabledColor: '#E0E0E0'
       }}
     >
-      <Step label="Persetujun" />
+      <Step label="Persetujuan" />
       <Step label="Pembayaran" />
       <Step label="Tranaksi" />
       <Step label="Pencairan" />
@@ -175,11 +310,54 @@ const RoomTrx = () => {
             {!sellerAgree && <button onClick={agreeSeller}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
           </div>
           <div className='ubah'>
-            {!sellerAgree && <button onClick={ () => setModalShow(true)}>Ubah</button>}
+            {!sellerAgree && <button onClick={handleOpen}>Ubah</button>}
             <Modal
-              show={modalShow}
-              onHide={() => setModalShow(false)}
-            />
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style} className='modals'>
+            <h4 style={{color:'#01426a', marginBottom:'1rem'}}>Ubah  ketentuan tranaksi anda</h4>
+            <p style={{color: '#545454',fontSize:'1rem',marginBottom:'1rem'}}>Setelah konfirmasi, kami akan memberitahu pembeli untuk meninjau pembaruan yang telah Anda buat</p>
+            <div className='modal-change'>
+              <form onSubmit={handleSubmit}>
+              <div>
+                <p>Pembayar biaya admin</p>
+                <select name='adminFee' value={changeData.adminFee} onChange={handleChange}>
+                  <option value='Penjual'>Penjual</option>
+                  <option value='Pembeli'>Pembeli</option>
+                </select>
+              </div>
+              <div>
+                <p>Harga</p>
+                <input type='number' name='amount' value={changeData.amount} onChange={handleChange} placeholder='Harga Produk/Jasa'/>
+              </div>
+              <div>
+                <p>Beridentitas</p>
+                <select name='identitas' value={changeData.identitas} onChange={handleChange}>
+                  <option value='Ya'>Ya</option>
+                  <option value='Tidak'>Tidak</option>
+                </select>
+              </div>
+              <div>
+                <p>Alasan</p>
+                <input type='text' name='alasan' value={changeData.alasan} onChange={handleChange} placeholder='Alasan modifkasi'/>
+              </div>
+              <button type='submit' onClick={handleClose} disabled={loading} >{loading ? <div className='spinner'></div> : 'Konfirmasi'}</button>
+              </form>
+            </div>
+          </Box>
+        </Fade>
+      </Modal>
           </div>
          </div>
         </div>
@@ -194,11 +372,31 @@ const RoomTrx = () => {
             {!buyerAgree && <button onClick={agreeBuyer}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
             </div>
             <div className='ubah'>
-            {!buyerAgree && <button onClick={ () => setModalShow(true)}>Ubah</button>}
+            {!buyerAgree && <button onClick={handleOpen}>Ubah</button>}
             <Modal
-              show={modalShow}
-              onHide={() => setModalShow(false)}
-            />
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
+          </Box>
+        </Fade>
+      </Modal>
             </div>
            </div>
           </div>
@@ -217,10 +415,46 @@ const RoomTrx = () => {
           )}
           {transaksi.beridentitas === 'Ya' && (
             <div>
-              <h4>Idenitas</h4>
-              <p>Tranaksi beridentitas silahkan kirimkan identitas anda</p>
+              <h4>Transaksi Beridentitas</h4>
+              <div className='step-identy'>
+            <p>1.Anda harus mengirimkan 2 Identitas yang menunjukkan alamat Anda</p>
+            <p>2.Masukkan masing-masing 3 foto pada setiap identitas yang berupa(foto identitas,foto anda,dan foto selfi dengan identitas) </p>
+            <p>3.Identitas harus jelas apabila identitas kurang jelas kami akan menyuruh anda mengirim ulang identitas yang lebih baik.
+            </p>
+            </div>
               <div className='button-payment'>
-            <button>kirim</button>
+            <button onClick={handleOpen}>kirim</button>
+            <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style}>
+            <div className='container-identity'>
+            <h4 style={{color:'#01426a',marginBottom:'0.5rem'}}>Kirimkan 2 Identitas anda</h4>
+            <p style={{marginBottom:'2rem'}}>Kirimkan masing-masing 3 foto(Foto identitas,foto anda,dan foto selfi dengan identitas)</p>
+            <form onSubmit={handleIdentity}>
+             <p>Identitas Pertama</p><br/> 
+            <input type='file' name='identy1' accept='image/*' onChange={handleChangeIdentity} multiple></input>
+            <p>Identitas Pertama</p><br/> 
+            <input type='file' name='identy2' accept='image/*' onChange={handleChangeIdentity1} multiple></input>
+
+            <br/>
+            <button type='submit' onClick={handleClose} disabled={loading}>{loading ? <div className='spinner'></div>:'Kirim Identitas'}</button>
+            </form>
+            </div>
+          </Box>
+        </Fade>
+      </Modal>
           </div>
             </div>
           )}
@@ -228,10 +462,10 @@ const RoomTrx = () => {
         )}
         {transaksi.buyer_email === email && (
           <div>
-            <h4>Pembayran</h4>
-            <p>Silahkan lakukan pembaran ke syawalrekber.com untuk melanjutkan transaksi</p>
+            <h4>Pembayaran</h4>
+            <p>Silahkan lakukan pembayaran ke syawalrekber.com untuk melanjutkan transaksi anda dengan mengklick tombol di bawah</p>
             <div className='button-payment'>
-            <button>Bayar</button>
+            <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>
           </div>
           </div>
         )}
@@ -320,4 +554,4 @@ const RoomTrx = () => {
   )
 }
 
-export default RoomTrx
+export default RoomTrx;

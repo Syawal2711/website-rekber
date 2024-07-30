@@ -1,8 +1,8 @@
 .section {
     color: black;
-    background-color: #01426a;
     display: flex;
-    padding: 0 7rem;
+    width:60rem;
+    margin:0 auto;
     padding-bottom: 2rem;
     align-items:center
 }
@@ -76,9 +76,9 @@
 .img img{
     background-color: #004AAD;
     border-radius: 100%;
-    padding: 2rem;
+    padding: 1.5rem;
     width: 10rem;
-    height: 10rem;
+    height: auto;
     margin:0rem 2rem 0 2rem;
 }
 

@@ -1,16 +1,24 @@
 .intro {
     display: flex;
-    padding: 1rem 6rem;
+    width:60rem;
+    margin:0 auto;
     color : black;
     border-bottom: 1px solid #545454;
-    align-items:center
+    justify-content: space-between;
 
 }
 
+.intro-left {
+    flex:0 0 40%;
+    display: flex;
+    justify-content: center; /* Mengatur horizontal center alignment */
+    align-items: center; 
+}
+
 .intro-left img {
-    width: 30rem;
-    height: 30rem;
-    align-items: center;
+    margin-top:3rem;
+    width: 20rem;
+    height: 22rem;
 }
 
 .intro-right {
@@ -29,7 +37,7 @@
 
 .intro p{
     color: #545454;
-    font-size:1.1rem ;
+    font-size:1rem;
 }
 
 .intro p::first-letter {
