@@ -4,15 +4,15 @@ import './Choose.css'
 
 function Choose() {
     return (
-        <div style={{width:'60rem',margin:'2rem auto',paddingTop:'5rem'}}>
+        <div className='choose' style={{width:'60rem',maxWidth:'100%',padding:'1rem',margin:'2rem auto',paddingTop:'5rem'}}>
             <h1 style={{color:'black'}}>Kenapa Memilih Rekber Syawalrekber.com</h1>
-            <div style={{display:'flex'}}>
+            <div style={{display:'flex',flexWrap:'wrap',padding:'0 2rem'}}>
                 <div style={{flex:'0 0 40%',justifyContent:'center',alignItems:'center'}}>
                 <img src={img} alt='img' style={{width:'20rem',height:'auto'}}/>
                 </div>
                 <div className='poin'>
                     <p>1.Transaksi Aman: Menjamin keamanan dengan sistem rekening bersama yang mencegah penipuan dan memastikan kewajiban terpenuhi.</p>
-                    <p>2.Transaksi Beridentitas: Penjual bisa mengirim identitas sesuai kesepakatan untuk meningkatkan kepercayaan dan keamanan.</p>
+                    <p>2.Transaksi Beridentitas: Anda bisa membuat transaksi beridentitas sesuai kesepakatan untuk meningkatkan kepercayaan dan keamanan.</p>
                     <p>3.Integrasi Xendit: Mendukung berbagai metode pembayaran, mempercepat transaksi, dan menyediakan fitur canggih.</p>
                     <p>4.Transaksi Transparan: Setiap tahap transaksi dapat dilacak oleh pembeli dan penjual untuk transparansi penuh.</p>
                     <p>5.Layanan Pelanggan Cepat: Dukungan pelanggan yang responsif untuk menyelesaikan masalah atau pertanyaan.</p>

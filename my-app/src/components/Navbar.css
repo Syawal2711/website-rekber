@@ -1,13 +1,14 @@
 .navbar {
     display: flex;
-    background-color: #01426a;
     justify-content: space-between;
-    padding: 1rem 7rem;
-    
+    width:65rem;
+    max-width: 100%;
+    padding:0.5rem 1rem;
+    margin:0 auto;
 }
 
 .navbar h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
 }
 .navbar-nav{
     display: flex;
@@ -19,27 +20,21 @@
     align-items: center;
 }
 
-@media screen and (min-width:768px) and (max-width:915px) {
+@media screen and (min-width:768px) and (max-width:1066px) {
     .navbar {
-        padding: 1rem 2rem;
+        width: 100%;
+        padding: 1rem 0.5rem;
+        width: none;
+    }
+    .navbar-nav {
+        display: none;
     }
 }
-
-
 @media  screen and (max-width:767px) {
+    .navbar-right {
+        display: none;
+    }
     .navbar-nav {
-        display:none;
-    }
-    .navbar {
-        padding:1rem 0.5rem
-    }
-    .navbar h1{
-        font-size:25px;
-    }
-    .login{
-        font-size:15px;
-        background-color:#3cb95d;
-        padding:5px 10px;
-        border-radius:5px;
+        display:none
     }
 }

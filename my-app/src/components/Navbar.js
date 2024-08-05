@@ -5,8 +5,9 @@ import './Navbar.css'
 
 function Navbar() {
     return (
+        <div style={{backgroundColor:'#01426a',width:'100%'}}>
         <nav className="navbar">
-          <h1 style={{fontSize:'1.5rem'}}>Syawalrekber.com</h1>
+          <h1>Syawalrekber.com</h1>
             <div className="navbar-nav">
                 <div className="nav-item">
                     <Link
@@ -82,6 +83,7 @@ function Navbar() {
               }}>Buat Akun</Link1>      
               </div>
         </nav>
+        </div>
     );
 }
 

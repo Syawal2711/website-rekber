@@ -10,7 +10,8 @@ export const Method = () => {
         <p>Kamu masih bingung bagaimana cara rekber di Syawalrekber.com? Jangan khawatir! Kamu bisa menggunakan Syawalrekber.com dengan sangat mudah dan cepat. Berikut ini adalah langkah-langkah yang harus kamu lakukan.</p>
         </div>
         <div className='method-left'>
-          <img src={img6} alt='img' style={{width:'20rem',heigth:'auto',marginLeft:'2rem'}}/>
+          <img src={img6} alt='img' 
+          className='img' style={{width:'20rem',heigth:'auto',margin:'0 2rem'}}/>
           </div>
     </div>
   )

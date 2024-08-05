@@ -1,11 +1,12 @@
 .intro {
     display: flex;
     width:60rem;
+    max-width: 100%;
+    padding: 0 2rem;
     margin:0 auto;
     color : black;
     border-bottom: 1px solid #545454;
     justify-content: space-between;
-
 }
 
 .intro-left {
@@ -44,53 +45,29 @@
     margin-left: 20px;
 }
 
-@media screen and (min-width:768px) and (max-width:915px) {
+@media screen and (min-width:700px) and (max-width:822px) {
+    .intro-left img {
+        margin-top: 1rem;
+        width:16rem;
+        height: 18rem;
+    }
+}
+@media screen and (max-width:699px) {
     .intro {
-        padding: 1rem 3rem;
-        align-items: center;
+        flex-wrap: wrap;
     }
     .intro-left img {
-        width: 20rem;
-        height: 20rem;
+        margin-top: 1rem;
+        width:16rem;
+        height:18rem;
     }
-}
-
-@media screen and (min-width:916px) and (max-width:1023px) {
-    .intro {
-        padding: 1rem 4rem
-    }
-}
-
-@media  screen and (max-width:767px) {
-    .intro{
-        flex-direction:column;
-        padding:1rem;        
-    }
-
-    .intro-left {
-        display:flex;
-        justify-content:center;
+    .intro h1 {
+        padding-top: 1rem;
     }
     .intro-right {
-        padding:0;
+        padding-left: 0;
     }
-
-    .intro h1 {
-        padding-top:0;
-        font-size:1.5rem
-    }
-
-    .intro p{
-        font-size:0.8rem
-    }
-    .paragraff{
-        margin-bottom:10px;
-    }
-    
-
-    .intro-left img {
-        width:15rem;
-        height:15rem;
-        align-items:center
+    .intro {
+        justify-content: center;
     }
 }

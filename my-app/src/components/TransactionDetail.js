@@ -21,7 +21,6 @@ const TransactionDetail = () => {
     const [adminFee, setAdminFee] = useState(0)
     const [emailDetail,setEmailDetail] = useState('')// Sesuaikan nilai default jika diperlukan
     const email = decodedToken.email;
-    console.log(email,emailDetail,peran)
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true)

@@ -10,3 +10,41 @@
 .footers p {
     margin-bottom: 2rem;
 }
+
+.footer-img {
+    background-color: #004AAD;
+  width: 50rem;
+  max-width: 100%;
+  position: absolute;
+  top: -8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  padding:2rem;
+  border-radius: 15px;
+}
+
+.footer {
+    display: flex;
+  width: 60rem;
+  max-width: 100%;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 0 2rem;
+  padding-top: 11rem;
+}
+
+@media screen and (max-width:699px) {
+    .footer {
+        flex-wrap: wrap;
+    }
+    .footer-img{
+        flex-wrap: wrap-reverse;
+        justify-content: center;
+        top:-14rem
+    }
+    .footer {
+        padding-top: 17rem;
+    }
+}

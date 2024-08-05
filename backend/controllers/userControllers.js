@@ -135,11 +135,11 @@ exports.login = async (req, res) => {
 
   try {
     let buyerEmail, sellerEmail;
-    if(peran === 'Pembeli'){
+    if(peran === 'Penjual'){
       buyerEmail = emailDetail;
       sellerEmail = email;
     }
-    if (peran === 'Penjual') {
+    if (peran === 'Pembeli') {
       sellerEmail = emailDetail;
       buyerEmail = email;
       console.log(1,buyerEmail,sellerEmail)
@@ -172,7 +172,7 @@ exports.agreed = async (req,res) => {
   const query = `UPDATE transactions SET ${field} = ? WHERE transaction_id = ?`;
   try {
     await db.execute(query,[true,id])
-    return res.status(200).send('berhasill browwww')
+    return res.status(200)
   } catch (error) {
     console.log('Error:',error)
     return res(500).json({message: 'ada yang salah'})
@@ -194,11 +194,11 @@ exports.updateState = async (req,res) => {
 
 exports.change = async (req,res) => {
   const {id} =req.params;
-  const {beridentitas,admin_paid_by, amount, alasan} = req.body;
-  const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ? WHERE transaction_id
+  const {beridentitas,admin_paid_by, amount, alasan,field,fields} = req.body;
+  const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ?, ${field} = ?, ${fields} = ? WHERE transaction_id
  = ?`;
   try {
-    await db.execute(query,[amount,beridentitas,admin_paid_by,id])
+    await db.execute(query,[amount,beridentitas,admin_paid_by,false,true,id])
     console.log('berhasill')
     return res.status(200).send('succes change data')
   } catch (error) {
@@ -219,19 +219,47 @@ exports.invoice = async (req,res) => {
       data: {
         external_id:id,
         amount,
-        success_redirect_url: `https://improved-goggles-q774qx465x7qfxw6q-3000.app.github.dev/transaksi/${id}`,
+        success_redirect_url: `https://3000-idx-website-rekber-1722338815842.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev//transaksi/${id}`,
         failure_redirect_url: "https://www.google.com",
       }
     });
-    console.log(response.data.invoice_url)
-    res.status(200).json(response.data.invoice_url);
+    const idInvoice= response.data.id
+    const urlInvoice = response.data.invoice_url
+    try {
+      await db.execute(`UPDATE transactions SET id_invoice = ?,url_invoice = ? WHERE transaction_id = ?`,[idInvoice,urlInvoice,id]);
+      res.status(200).json(urlInvoice)
+    } catch (error) {
+      res.status(500).json({message:message.error})
+    }
+   
   } catch (error) {
     res.status(500).json({error: error.message})
   }
 }
+exports.payout = async (req,res) => {
+  const {external_id,amount,email} = req.body
+  try {
+    const response = await axios({
+      method:'post',
+      url:'https://api.xendit.co/payouts',
+      auth: {
+        username: process.env.XENDIT_KEY,
+        password:''
+      },
+      data: {
+        external_id,
+        amount,
+        email,
+      }
+    })
+    res.status(200).json(response.data)
+  } catch (error) {
+    res.status(500).json({error:error.message})
+  }
+}
 
 exports.findInvoice = async (req,res) => {
-  const {id} = req.body
+  const {id} = req.query
   try {
     const response = await axios({
       method: 'get',
@@ -240,34 +268,33 @@ exports.findInvoice = async (req,res) => {
         username: process.env.XENDIT_KEY,
         password: ''
       }
-    })
-    res.status(200).json(response.data)
+    }) 
+    res.status(200).json(response.data.status)
   } catch (error) {
+    console.log(error)
     res.status(500).json({error: error.message})
   }
 }
 
 exports.identities = async (req, res) => {
-   try {
+  try {
     const images = req.files['files'];
     const documents = req.files['files1'];
+    const id = req.body.filesId
 
+    // Dapatkan path gambar dan dokumen
     const imagePaths = images.map(file => file.path);
     const documentPaths = documents.map(file => file.path);
-
     // Simpan informasi file ke database
-    const sql = 'INSERT INTO uploads (images, documents) VALUES (?, ?)';
-    db.execute(sql, [JSON.stringify(imagePaths), JSON.stringify(documentPaths)], (err, result) => {
-      if (err) throw err;
-      console.log('ident masuk')
-      res.status(200).json({
-        message: 'Files uploaded successfully',
-        data: result
-      });
-    });
-   } catch (error) {
-    res.status(500).json({ message: 'File upload failed', error: err.message });
-   }
+    const sql = 'INSERT INTO uploads (images, documents,id_identy) VALUES (?,?,?)';
+    await db.execute(sql, [JSON.stringify(imagePaths), JSON.stringify(documentPaths),id]);
+
+    // Kirim respons sukses
+    res.status(200).json({ message: 'Files uploaded successfully' });
+  } catch (error) {
+    // Kirim respons error
+    res.status(500).json({ message: 'File upload failed', error: error.message });
+  }
 };
 
 exports.tes = async(req,res) => {

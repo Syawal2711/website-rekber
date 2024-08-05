@@ -6,7 +6,7 @@ import img from '../assets/images/8.png';
 const Footer = () => {
     return (
         <div id='footer' style={{ backgroundColor: '#01426a', position: 'relative', paddingBottom: '5rem' }}>
-            <div className='footer' style={{ display: 'flex', width: '60rem', margin: '0 auto', gap: '2rem', paddingTop: '11rem' }}>
+            <div className='footer'>
                 <div style={{ flex: '1' }}>
                     <h2 style={{ marginBottom: '2rem' }}>Syawalrekber.com</h2>
                     <p style={{ fontWeight: '100', fontSize: '0.9rem', lineHeight: '20px' }}>
@@ -35,23 +35,12 @@ const Footer = () => {
                     <Link className='link'>syawal_rekber</Link>
                 </div>
             </div>
-            <div style={{
-                backgroundColor: '#004AAD',
-                width: '50rem',
-                position: 'absolute',
-                top: '-8rem',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '1rem 2rem',
-                borderRadius:'15px'
-            }}>
+            <div className='footer-img'>
                 <div style={{ color: 'white' }}>
                     <h1 style={{marginBottom:'2rem'}}>Mau tanya-tanya dulu ke admin? Hubungi kami di Whatsapp</h1>
                     <Link style={{ textDecoration: 'none',padding:'8px 1.5rem',borderRadius:'5px',backgroundColor:'#3cb95d',fontWeight:'600'}}>Chat Whatsapp</Link>
                 </div>
-                <img src={img} alt='img' style={{ width: '15rem', height: 'auto', marginLeft: '1rem' }} />
+                <img src={img} alt='img' className='img-footer' style={{ width: '15rem', height: 'auto', marginLeft: '1rem' }} />
             </div>
         </div>
     );

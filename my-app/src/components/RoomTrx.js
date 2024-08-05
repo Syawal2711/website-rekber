@@ -8,7 +8,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
-import Typography from '@mui/material/Typography';
+
 
 
 const RoomTrx = () => {
@@ -16,6 +16,7 @@ const RoomTrx = () => {
 
   const {transaksiId} = useParams();
   const [transaksi,setTransaksi] = useState(null);
+  const [status,setStatus] = useState(null)
   const [loading,setLoading] = useState(false)
   const [steps,setSteps] = useState(0);
   const token = localStorage.getItem('accessToken');
@@ -31,14 +32,12 @@ const RoomTrx = () => {
     identitas:'',
     alasan:''
   })
+  const [id,setId] = useState('')
   const [files,setFiles] = useState([]);
   const [files1,setFiles1] = useState([])
-  console.log(files)
-  console.log(sellerAgree,buyerAgree)
+
+  console.log(status)
   console.log(transaksi)
-
- 
-
   useEffect(() => {
     const fetchTransaction = async () => {
       try {
@@ -60,7 +59,27 @@ const RoomTrx = () => {
   }
   }, [token,transaksiId]);
 
-
+  useEffect(() => {
+    const invoiceStatus = async () => {
+      if(transaksi && transaksi.id_invoice && transaksi.step === 1) {
+        try {
+          const response = await axios.get('/auth/findInvoice',{
+            params: { id: transaksi.id_invoice }
+          })
+          
+          setStatus(response.data);
+          if(response.data === 'PAID' && transaksi.beridentitas
+ === 'Tidak') {
+  updateSteps()
+          }
+        }
+        catch (error) {
+          console.error('Error:',error)
+        }
+      }}
+        invoiceStatus();
+  },[transaksi]);
+  
   const updateState = async (field) => {
     setLoading(true);
     try {
@@ -69,7 +88,6 @@ const RoomTrx = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      console.log(buyerAgree,sellerAgree)
       if(field === 'buyerAgreed') {
         setBuyerAgree(1)
       }
@@ -85,7 +103,6 @@ const RoomTrx = () => {
  useEffect(() => {
     if(buyerAgree && sellerAgree && steps === 0) {
       updateSteps();
-      console.log('masukkkk')
   }
 },[buyerAgree,sellerAgree,steps])
 
@@ -125,12 +142,7 @@ const RoomTrx = () => {
       files1.forEach((file) => {
         formData.append('files1',file);
       })
-
       formData.append('filesId',transaksiId)
-      // Menampilkan isi FormData
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value.name}`);
-      });
       try {
         // Mengirim data menggunakan Axios
         const response = await axios.post('/auth/upload', formData, {
@@ -138,27 +150,26 @@ const RoomTrx = () => {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log(response.data)
-        alert('tessss')
         setLoading(false)
       } catch (error) {
         console.error('An error occurred:', error);
       }
   };
-  const handleSubmit = async(e) => {
+  const handleSubmit = async(e,field,fields) => {
     e.preventDefault();
     try {
       const response = await axios.patch(`/auth/change/${transaksiId}`, {
         beridentitas : changeData.identitas,
         admin_paid_by : changeData.adminFee,
         amount : changeData.amount,
-        alasan : changeData.alasan
+        alasan : changeData.alasan,
+        field,
+        fields
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      console.log(response)
     } catch (error) {
       console.log('Error:',error)
     }
@@ -177,6 +188,26 @@ const RoomTrx = () => {
         }
       })
       window.location.href = response.data;
+      setId(response.data.id);
+      setLoading(false)
+    } catch (error) {
+      console.log('Error:',error)
+    }
+  }
+
+  const handlePayout = async(e) => {
+    setLoading(true)
+    try {
+      const response = await axios.post('/auth/payout', {
+        external_id:transaksi.transaction_id,
+        amount:transaksi.amount,
+        email:transaksi.seller_email
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      updateSteps();
       setLoading(false)
     } catch (error) {
       console.log('Error:',error)
@@ -191,6 +222,11 @@ const RoomTrx = () => {
   })
   }
 
+  const handleUrlPay = () => {
+    window.location.href = transaksi.url_invoice
+  }
+
+
   const agreeBuyer = () => {
     updateState('buyerAgreed');
   };
@@ -198,6 +234,14 @@ const RoomTrx = () => {
   const agreeSeller = () => {
     updateState('sellerAgreed');
   };
+
+  const changeBuyer = () => {
+    handleSubmit('sellerAgreed','buyerAgreed')
+  }
+
+  const changeSeller = () => {
+    handleSubmit('buyerAgreed','sellerAgreed')
+  }
 
   const style = {
     position: 'absolute',
@@ -274,7 +318,6 @@ const RoomTrx = () => {
       <Step label="Pembayaran" />
       <Step label="Tranaksi" />
       <Step label="Pencairan" />
-      <Step label="Selesai" />
     </Stepper>
     {steps === 0 && (
       <p>Kedua belah pihak harus menyetujui transksi di bawah untuk melanjutkan transaksi</p>
@@ -293,13 +336,72 @@ const RoomTrx = () => {
     {steps === 3 && (
       <p>Pembayaran Ke Penjual sebesar IDR {transaksi.amount}</p>
     )}
-    {steps === 4 && (
-      <p>Terima kasih telah bertransaksi dengan kami</p>
-    )}
     </div>
     <div className='proses'>
       {steps === 0 && (
         <>
+        {transaksi.buyer_email === email && (
+          <div>
+            <h4>Setujui Transaksi</h4>
+            {buyerAgree && <p>Anda sudah meneyetujui transaksi ini menunggu persetujuan dari pihak pembeli</p>}
+            {!buyerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Apabila anda telah setuju anda sudah tidak bisa lagi mengubah transaksi kecuali penjual mengubah transaksi lagi.</p>}
+           <div className = 'button-agree'>
+            <div className='setuju'>
+            {!buyerAgree && <button onClick={agreeBuyer}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
+            </div>
+            <div className='ubah'>
+            {!buyerAgree && <button onClick={handleOpen}>Ubah</button>}
+            <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style} className='modals'>
+            <h4 style={{color:'#01426a', marginBottom:'1rem'}}>Ubah  ketentuan tranaksi anda</h4>
+            <p style={{color: '#545454',fontSize:'1rem',marginBottom:'1rem'}}>Setelah konfirmasi, kami akan memberitahu penjual untuk meninjau pembaruan yang telah Anda buat</p>
+            <div className='modal-change'>
+              <form onSubmit={handleSubmit}>
+              <div>
+                <p>Pembayar biaya admin</p>
+                <select name='adminFee' value={changeData.adminFee} onChange={handleChange}>
+                  <option value='Penjual'>Penjual</option>
+                  <option value='Pembeli'>Pembeli</option>
+                </select>
+              </div>
+              <div>
+                <p>Harga</p>
+                <input type='number' name='amount' value={changeData.amount} onChange={handleChange} placeholder='Harga Produk/Jasa'/>
+              </div>
+              <div>
+                <p>Beridentitas</p>
+                <select name='identitas' value={changeData.identitas} onChange={handleChange}>
+                  <option value='Ya'>Ya</option>
+                  <option value='Tidak'>Tidak</option>
+                </select>
+              </div>
+              <div>
+                <p>Alasan</p>
+                <input type='text' name='alasan' value={changeData.alasan} onChange={handleChange} placeholder='Alasan modifkasi'/>
+              </div>
+              <button type='submit' onClick={handleClose} disabled={loading} >{loading ? <div className='spinner'></div> : 'Konfirmasi'}</button>
+              </form>
+            </div>
+          </Box>
+        </Fade>
+      </Modal>
+            </div>
+           </div>
+          </div>
+        )}
         {transaksi.seller_email === email && (
           <div>
           <h4>Setujui Transaksi</h4>
@@ -362,45 +464,7 @@ const RoomTrx = () => {
          </div>
         </div>
         )}
-        {transaksi.buyer_email === email && (
-          <div>
-            <h4>Setujui Transaksi</h4>
-            {buyerAgree && <p>Anda sudah meneyetujui transaksi ini menunggu persetujuan dari pihak pembeli</p>}
-            {!buyerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Apabila anda telah setuju anda sudah tidak bisa lagi mengubah transaksi kecuali penjual mengubah transaksi lagi.</p>}
-           <div className = 'button-agree'>
-            <div className='setuju'>
-            {!buyerAgree && <button onClick={agreeBuyer}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
-            </div>
-            <div className='ubah'>
-            {!buyerAgree && <button onClick={handleOpen}>Ubah</button>}
-            <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
-            </div>
-           </div>
-          </div>
-        )}
+        
         </>
       )}
       {steps === 1 && (
@@ -463,9 +527,11 @@ const RoomTrx = () => {
         {transaksi.buyer_email === email && (
           <div>
             <h4>Pembayaran</h4>
-            <p>Silahkan lakukan pembayaran ke syawalrekber.com untuk melanjutkan transaksi anda dengan mengklick tombol di bawah</p>
+            {(status === 'PENDING' || status === null) && <p>Silahkan lakukan pembayaran ke syawalrekber.com untuk melanjutkan transaksi anda dengan mengklick tombol di bawah</p>}
+            {status === 'PAID' && <p>Dana diterima menunggu pembeli selesai mengirimkan Identitasnya</p>}
             <div className='button-payment'>
-            <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>
+              {!transaksi.id_invoice &&  <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>}
+              {transaksi.url_invoice && status === 'PENDING' && <button onClick={handleUrlPay}>Bayar Sekarang</button>}
           </div>
           </div>
         )}
@@ -473,19 +539,20 @@ const RoomTrx = () => {
       )}
       {steps === 2 && (
         <>
-        {transaksi.seller_email === email && (
+        {transaksi.buyer_email === email && (
           <div>
             <h4>Bertransaksi</h4>
-            <p>Dana diterima,pembeli dan penjual melakukan transaksi,dan apabila pembeli telah menerima barang/jasanya kami akan otomatis melanjutkanya ke langkah pencaiaran dana ke Anda</p>
+            <p>Dana diterima,silahkan lakukan transaksi ke penjual,dan apabila anda telah menerima barang/jasanya dari pembeli silahkan klik tombol dibawah untuk mencairkan dana ke penjual </p>
+            <div className='button-payment'>
+              <button onClick={handlePayout} disabled={loading}>Barang diterima</button>
+             </div>
           </div>
         )}
-        {transaksi.buyer_email === email && (
+        {transaksi.seller_email === email && (
              <div>
              <h4>Bertransaksi</h4>
-             <p>Dana diterima,pembeli dan penjual melakukan transaksi,dan apabila anda telah menerima barang/jasanya dari pembeli silahkan klik tombol dibawah untuk melakukan pencairan dana penjual </p>
-             <div className='button-payment'>
-              <button>Cairkan</button>
-             </div>
+             <p>Dana diterima dari pembeli,silahkan lakukan transaksi ke pembeli,dan apabila pembeli sudah mengkonfirmasi bahwa barang/jasanya sudah di terimah kami akan mengirimkan pembayaran ke email anda.
+             </p>
            </div>
           )}
         </>
@@ -494,37 +561,28 @@ const RoomTrx = () => {
         <>
         {transaksi.seller_email === email && (
           <div>
-          <h4>Pembayaran Ke Penjual</h4>
-          <p>Klick tombol di bawah ini untuk mengirimkan anda email pembayaran ke email anda sebesar IDR {transaksi.amount}</p>
-          <div className='button-payment'>
-            <button>Cairkan</button>
+            <h4>Pembayaran</h4>
+            <p>terima Kasih telah melakukan transaksi di syawalrekber.com,kami telah mengirimkan anda email email pembayaran ke email anda</p>
           </div>
-        </div>
         )}
-        {transaksi.seller_buyer === email && (
+        {transaksi.buyer_email === email && (
           <div>
-            <h4>Pembayaran Ke Penjual</h4>
-            <p>Kami sedang melakukan pencairan dana ke penjual sebesar IDR {transaksi.amount}</p>
+            <h4>Pembayaran</h4>
+            <p>Terima Kasih telah melakukan transaksi di syawalrekber.com,kami telah mengirimkan email pembyaran ke penjual</p>
           </div>
-        )}
+        ) }
         </>
       )}
     </div>
     </div>
-    {steps === 2 && (
-      <div className='container-transaksi'>
-        <div className='proses'>
-      <p>Butuh ruang untuk bertransaksi dan di pantau dengan admin? anda bisa mengklick tombol dibawah untuk membuat grub whatsapp untuk bertransaksi</p>
-      <div className='button-payment'>
-           <button>Buat grub</button>
-      </div>
-      </div>
-      </div>
-    )}
     <div className='trx-detail'>
       <h3>Transaksi Detail</h3>
-       <div className='trx'>
+      <div className='trx'>
+        <p>Barang/Jasa</p>
         <p>{transaksi.product}</p>
+       </div>
+       <div className='trx'>
+        <p>Harga</p>
         <p>IDR {parseFloat(transaksi.amount)}</p>
        </div>
        <div className='trx'>
