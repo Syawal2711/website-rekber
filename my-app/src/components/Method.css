@@ -19,6 +19,7 @@
     font-size: 1rem;
 }
 
+
 @media screen and (max-width:699px) {
     .method {
         flex-direction: column-reverse;

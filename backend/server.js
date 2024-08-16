@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(express.static('uploads'))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
 

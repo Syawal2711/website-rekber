@@ -41,15 +41,13 @@ function Home() {
                 <h1>Jangan Pernah Membeli Atau Menjual Barang Secara Online Tanpa Menggunakan Syawalrekber.com</h1>
                 <p>Dengan Syawalrekber.com Anda Dapat Membeli Dan Menjual Apapun Dengan Aman</p>
                 <div className='form'>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>    
                         <div className='input-form'>
-                            <label className='peran'>
                                 <select name="peran" value={formData.peran} onChange={handleChange}>
                                     <option value='' disabled defaultValue>Saya Sebagai</option>
                                     <option value="Penjual">Penjual</option>
                                     <option value="Pembeli">Pembeli</option>
                                 </select>
-                            </label> 
                             <input
                                 type="text"
                                 name="product"
@@ -69,13 +67,12 @@ function Home() {
                                 required
                             /> 
                             
-                            <label className='ident'>
+                        
                                 <select name="beridentitas" value={formData.beridentitas} onChange={handleChange}>
                                     <option value='' disabled defaultValue>Beridentitas</option>
                                     <option value="Ya">Ya</option>
                                     <option value="Tidak">Tidak</option>
                                 </select>
-                            </label>
                         </div>
                         <div className='buton'>
                             <button type="submit" disabled={!isFormValid && loading}>{loading ? <div className ='spinner' ></div> : 'Buat Rekber'}</button>

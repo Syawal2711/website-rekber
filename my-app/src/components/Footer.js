@@ -2,6 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
 import img from '../assets/images/8.png';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import Email from '@mui/icons-material/Email';
+import Facebook from '@mui/icons-material/Facebook';
+import Instagram from '@mui/icons-material/Instagram';
 
 const Footer = () => {
     return (
@@ -9,7 +13,7 @@ const Footer = () => {
             <div className='footer'>
                 <div style={{ flex: '1' }}>
                     <h2 style={{ marginBottom: '2rem' }}>Syawalrekber.com</h2>
-                    <p style={{ fontWeight: '100', fontSize: '0.9rem', lineHeight: '20px' }}>
+                    <p style={{ fontWeight: '300', fontSize: '0.9rem', lineHeight: '20px' }}>
                         Jasa Rekening Bersama Terpercaya. Transaksi jarak jauh mudah & aman dari penipuan
                     </p>
                     <button style={{ backgroundColor: '#3cb95d', border: 'none', borderRadius: '5px', padding: '8px 1.5rem', fontSize: '1rem', fontWeight: '700', marginTop: '2rem' }}>
@@ -18,27 +22,32 @@ const Footer = () => {
                 </div>
                 <div className='footers' style={{ flex: '1' }}>
                     <p>Navigasi</p>
-                    <Link className='link'>Home</Link><br />
-                    <Link className='link'>Tata Cara</Link><br />
-                    <Link className='link'>Biaya Transaksi</Link><br />
+                    <Link className='link'>Home</Link>
+                    <Link className='link'>Tata Cara</Link>
+                    <Link className='link'>Biaya Transaksi</Link>
                     <Link className='link'>FAQ</Link>
                 </div>
-                <div className='footers' style={{ flex: '1' }}>
+
+                <div className='footers' style={{ flex: '1'}}>
                     <p>Contact</p>
-                    <Link className='link'>081524575677</Link><br />
-                    <Link className='link'>089347348473</Link><br />
-                    <Link className='link'>syawalrekber@gmail.com</Link>
+                    <Link className='link'>{<WhatsAppIcon/>} 
+                     081524575677</Link>
+                    <Link className='link'> {<WhatsAppIcon/>}  089347348473</Link>
+                    <Link className='link'>{<Email/>} syawalrekber@gmail.com</Link>
                 </div>
                 <div className='footers' style={{ flex: '1' }}>
                     <p>Social</p>
-                    <Link className='link'>Syawalrekber</Link><br />
-                    <Link className='link'>syawal_rekber</Link>
+                    <Link className='link'>{<Facebook/>} Syawalrekber</Link>
+                    <Link className='link'>{<Instagram/>} syawal_rekber</Link>
                 </div>
             </div>
             <div className='footer-img'>
                 <div style={{ color: 'white' }}>
                     <h1 style={{marginBottom:'2rem'}}>Mau tanya-tanya dulu ke admin? Hubungi kami di Whatsapp</h1>
-                    <Link style={{ textDecoration: 'none',padding:'8px 1.5rem',borderRadius:'5px',backgroundColor:'#3cb95d',fontWeight:'600'}}>Chat Whatsapp</Link>
+                    <Link style={{ textDecoration: 'none',padding:'8px',borderRadius:'5px',backgroundColor:'#3cb95d',fontWeight:'600',display:'flex',alignItems:'center',gap:'0.5rem',
+                    width:'12rem',
+                    justifyContent:'center'
+                    }}>{<WhatsAppIcon/>} Chat Whatsapp</Link>
                 </div>
                 <img src={img} alt='img' className='img-footer' style={{ width: '15rem', height: 'auto', marginLeft: '1rem' }} />
             </div>

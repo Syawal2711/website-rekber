@@ -1,0 +1,26 @@
+.instructions{
+    max-width:50rem;
+    padding: 2rem 1rem;
+    margin:0 auto
+}
+
+.instructions h3,.instructions h2 {
+    color:#01426a ;
+}
+
+.instructions h2{
+    margin-bottom: 0.5rem;
+}
+.instructions h3 {
+    margin: 1rem 0 0.5rem 0;
+}
+
+.instructions p{
+    color:#545454;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+.instructions span {
+    color:black;
+    font-weight: 600;
+}

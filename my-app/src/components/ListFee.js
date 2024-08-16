@@ -1,7 +1,9 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { useNavigate } from 'react-router-dom';
 import 'swiper/css/bundle';
 import './ListFee.css';
+
 
 const pricingData = [
   {
@@ -77,6 +79,10 @@ const pricingData = [
 ];
 
 const ListFee = () => {
+  const navigate = useNavigate()
+  const handleLink = () => {
+    navigate('/detail')
+  }
   return (
     <div id='list-fee' className='sliders'>
       <h1>Biaya Transaksi</h1>
@@ -116,7 +122,7 @@ const ListFee = () => {
               <span className="pricing-price">{item.price}</span>
             </div>
             <div className="pricing-footer">
-              <button style={{border:'none'}} className="pricing-button">Transaksi Sekarang</button>
+              <button onClick={handleLink}  style={{border:'none'}} className="pricing-button">Transaksi Sekarang</button>
             </div>
           </div>
           </div>

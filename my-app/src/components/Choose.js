@@ -8,7 +8,7 @@ function Choose() {
             <h1 style={{color:'black'}}>Kenapa Memilih Rekber Syawalrekber.com</h1>
             <div style={{display:'flex',flexWrap:'wrap',padding:'0 2rem'}}>
                 <div style={{flex:'0 0 40%',justifyContent:'center',alignItems:'center'}}>
-                <img src={img} alt='img' style={{width:'20rem',height:'auto'}}/>
+                <img src={img} alt='img' style={{width:'18rem',height:'auto'}}/>
                 </div>
                 <div className='poin'>
                     <p>1.Transaksi Aman: Menjamin keamanan dengan sistem rekening bersama yang mencegah penipuan dan memastikan kewajiban terpenuhi.</p>

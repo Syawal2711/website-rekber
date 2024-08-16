@@ -11,7 +11,7 @@ export const Method = () => {
         </div>
         <div className='method-left'>
           <img src={img6} alt='img' 
-          className='img' style={{width:'20rem',heigth:'auto',margin:'0 2rem'}}/>
+          className='img' style={{width:'18rem',heigth:'auto',margin:'0 2rem'}}/>
           </div>
     </div>
   )

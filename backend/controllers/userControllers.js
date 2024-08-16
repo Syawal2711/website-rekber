@@ -169,10 +169,19 @@ exports.tranaksionId = async (req,res) => {
 exports.agreed = async (req,res) => {
   const {id} = req.params;
   const {field} = req.body;
-  const query = `UPDATE transactions SET ${field} = ? WHERE transaction_id = ?`;
+  const allowedFields = {
+    buyerAgreed : 'buyerAgreed',
+    sellerAgreed : 'sellerAgreed'
+  }
+
+  if (!allowedFields[field]) {
+    return res.status(400).json({ message: 'Field tidak valid' });
+  }
+
+  const query = `UPDATE transactions SET ${allowedFields[field]} = ? WHERE transaction_id = ?`;
   try {
     await db.execute(query,[true,id])
-    return res.status(200)
+    return res.status(200).send('success')
   } catch (error) {
     console.log('Error:',error)
     return res(500).json({message: 'ada yang salah'})
@@ -194,11 +203,11 @@ exports.updateState = async (req,res) => {
 
 exports.change = async (req,res) => {
   const {id} =req.params;
-  const {beridentitas,admin_paid_by, amount, alasan,field,fields} = req.body;
-  const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ?, ${field} = ?, ${fields} = ? WHERE transaction_id
+  const {beridentitas,admin_paid_by, amount, alasan,field,fields,admin_fee} = req.body;
+  const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ?, ${field} = ?, ${fields} = ?, admin_fee = ? WHERE transaction_id
  = ?`;
   try {
-    await db.execute(query,[amount,beridentitas,admin_paid_by,false,true,id])
+    await db.execute(query,[amount,beridentitas,admin_paid_by,false,true,admin_fee,id])
     console.log('berhasill')
     return res.status(200).send('succes change data')
   } catch (error) {
@@ -219,14 +228,14 @@ exports.invoice = async (req,res) => {
       data: {
         external_id:id,
         amount,
-        success_redirect_url: `https://3000-idx-website-rekber-1722338815842.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev//transaksi/${id}`,
+        success_redirect_url: `https://bug-free-space-guacamole-5ggrq9r5776xfprg6-3000.app.github.dev/transaksi/${id}`,
         failure_redirect_url: "https://www.google.com",
       }
     });
     const idInvoice= response.data.id
     const urlInvoice = response.data.invoice_url
     try {
-      await db.execute(`UPDATE transactions SET id_invoice = ?,url_invoice = ? WHERE transaction_id = ?`,[idInvoice,urlInvoice,id]);
+      await db.execute(`UPDATE transactions SET id_invoice = ?,url_invoice = ?, status = ? WHERE transaction_id = ?`,[idInvoice,urlInvoice,'In Progress',id]);
       res.status(200).json(urlInvoice)
     } catch (error) {
       res.status(500).json({message:message.error})
@@ -252,7 +261,13 @@ exports.payout = async (req,res) => {
         email,
       }
     })
-    res.status(200).json(response.data)
+    const idPayout = response.data.id
+    try {
+      await db.execute('UPDATE transactions SET id_payout = ?, status = ? WHERE transaction_id = ?',[idPayout,'Completed',external_id])
+      res.status(200).json({msg:'successfuly'})
+    } catch (error) {
+      res.status(500).json({error:error.message})
+    }
   } catch (error) {
     res.status(500).json({error:error.message})
   }
@@ -293,6 +308,7 @@ exports.identities = async (req, res) => {
     res.status(200).json({ message: 'Files uploaded successfully' });
   } catch (error) {
     // Kirim respons error
+    console.log(error)
     res.status(500).json({ message: 'File upload failed', error: error.message });
   }
 };

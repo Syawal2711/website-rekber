@@ -41,15 +41,12 @@
     font-size:1rem;
 }
 
-.intro p::first-letter {
-    margin-left: 20px;
-}
 
 @media screen and (min-width:700px) and (max-width:822px) {
     .intro-left img {
         margin-top: 1rem;
-        width:16rem;
-        height: 18rem;
+        width:14rem;
+        height: auto;
     }
 }
 @media screen and (max-width:699px) {

@@ -7,13 +7,17 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.5",
     "@mui/material": "^5.16.4",
+    "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "autoprefixer": "^10.4.20",
     "awesome-react-stepper": "^1.1.1",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "flowbite-react": "^0.10.1",
     "jwt-decode": "^4.0.0",
+    "postcss": "^8.4.41",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
@@ -48,5 +52,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:3001",
+  "devDependencies": {
+    "tailwindcss": "^3.4.9"
+  }
 }

@@ -15,7 +15,7 @@ export default function AccordionExpandDefault() {
     <>
     <div id='faq' style={{width:'60rem',maxWidth:'100%',margin:'0 auto',padding:'2rem'
     }}>
-    <h1 style={{color:'black', margin:'0 0 3rem 0',paddingTop:'4rem',borderTop:'1px solid #D9D9D9'}}>Frequently Asked Questions</h1>
+    <h1 style={{color:'black', margin:'0',borderTop:'1px solid #D9D9D9',paddingTop:'3rem'}}>Frequently Asked Questions</h1>
     </div>
     <div style={{width:'60rem',maxWidth:'100%',padding:'2rem',margin:'0 auto'}}>
       <Accordion style={style} defaultExpanded>
