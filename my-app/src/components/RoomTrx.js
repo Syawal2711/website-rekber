@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate, Link } from 'react-router-dom';
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { Stepper,Step } from 'react-form-stepper';
@@ -8,6 +8,12 @@ import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 
 
@@ -15,6 +21,7 @@ const RoomTrx = () => {
 
 
   const {transaksiId} = useParams();
+  const navigate = useNavigate();
   const [transaksi,setTransaksi] = useState(null);
   const [status,setStatus] = useState(null)
   const [loading,setLoading] = useState(false)
@@ -36,9 +43,19 @@ const RoomTrx = () => {
   })
   const [id,setId] = useState('')
 
-  console.log(changeData)
-  console.log(transaksi);
-  console.log(status)
+  useEffect(() => {
+    if(transaksi && transaksi.step === 0) {
+        setChangeData({
+          amount: parseFloat(transaksi.amount),
+          admin_fee: '',
+          adminFee: transaksi.admin_paid_by,
+          identitas: transaksi.beridentitas,
+          alasan: ''
+        });
+    }
+  }, [transaksi]);
+
+
   useEffect(() => {
     const fetchTransaction = async () => {
       try {
@@ -52,6 +69,7 @@ const RoomTrx = () => {
         setBuyerAgree(response.data.buyerAgreed);
         setSellerAgree(response.data.sellerAgreed);
       } catch (error) {
+        navigate('/login')
         console.log('Error:', error)
       }
     }
@@ -69,7 +87,7 @@ const RoomTrx = () => {
           })
           
           setStatus(response.data);
-          if(response.data === 'PAID' && transaksi.beridentitas
+          if(response.data === ('PAID' || 'SETTLED') && transaksi.beridentitas
  === 'Tidak') {
   updateSteps()
           }
@@ -83,7 +101,7 @@ const RoomTrx = () => {
   
   useEffect(()=> {
     const identyStatus = async() => {
-      if(transaksi && transaksi.beridentitas === 'Ya' && transaksi.step === 1 && transaksi.identy && status === 'PAID') {
+      if(transaksi && transaksi.beridentitas === 'Ya' && transaksi.step === 1 && transaksi.identy && status === ('PAID' || 'SETTLED')) {
         updateSteps()
       }
     }
@@ -310,7 +328,7 @@ useEffect(() => {
   if(!transaksi) {
     return <div>Transaksi tidak di temukan</div>
   }
- 
+
   return (
   <>
     <div className='container-transaksi'>
@@ -561,7 +579,7 @@ useEffect(() => {
           <div>
             <h4>Pembayaran</h4>
             {(status === 'PENDING' || status === null) && <p>Silahkan lakukan pembayaran ke syawalrekber.com untuk melanjutkan transaksi anda dengan mengklick tombol di bawah</p>}
-            {status === 'PAID' && <p>Dana diterima menunggu pembeli selesai mengirimkan Identitasnya</p>}
+            {status === ('PAID' || 'SETTLED') && <p>Dana diterima menunggu pembeli selesai mengirimkan Identitasnya</p>}
             <div className='button-payment'>
               {(!transaksi.id_invoice || null) &&  <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>}
               {transaksi.url_invoice && status === 'PENDING' && <button onClick={handleUrlPay}>Bayar Sekarang</button>}
@@ -661,6 +679,58 @@ useEffect(() => {
         <p>Hasil Penjual</p>
         <p>IDR {totalPenjual()}</p>
       </div>
+    </div>
+    <div className='trx-detail'>
+      <h4 style={{color:'#01426a',fontSize:'1.5rem',
+        marginBottom:'0.5rem',padding:'1rem 2rem'
+      }}>Frequently Asked Questions</h4>
+      <div style={{margin:'0 3rem'}}>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+        <p style={{color:'#545454'}}>Berapa lama proses rekber berlangsung? </p>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography style={{color:'#545454'}}>
+          Proses transaksi berlangsung hingga pembeli menerima barang/jasanya.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+        <p style={{color:'#545454'}}>Bagaimana Syawalrekber.com melindungi saya? </p>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography style={{color:'#545454'}}>Syawalrekber.com memastikan penjual dibayar saat barang/jasa telah diterima oleh pembeli,memastikan pembeli menerima pengembalian uang jika barang tidak dikirim atau tidak sesuai dengan deskripsi penjualan
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+        <p style={{color:'#545454'}}>Bagaimana jika terjadi sengketa dalam transaksi?</p>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography style={{color:'#545454'}}>Jika terjadi sengketa antara pembeli dan penjual, kami akan melakukan mediasi untuk memastikan transaksi di selesaikan dengan adil.Silakan hubungi kami dengan memberikan  detail lengkap sengketa agar kami dapat menyelesaikannya secepat mungkin
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      </div>
+    </div>
+    <div style={{position:'fixed',bottom:'1rem',right:'1rem'}}><Link to='https://wa.me/6281524575677'>
+    <WhatsAppIcon style={{width:'4rem', height:'auto',backgroundColor:'#3cb95d',padding:'0.3rem',borderRadius:'50%'}}/>
+    </Link>
+    
     </div>
     </>
   )
