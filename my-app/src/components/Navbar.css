@@ -5,6 +5,8 @@
     max-width: 100%;
     padding:0.5rem 1rem;
     margin:0 auto;
+    position: relative;
+    
 }
 
 .navbar h1 {
@@ -26,6 +28,31 @@
 
 .menu-auth{
     display: none;
+}
+
+.myprofil {
+    display: none;
+    position: absolute;
+    top:4rem;
+    background-color: white;
+    width: 17rem;
+    right: 0;
+    border-radius: 5px;
+    padding: 1rem;
+}
+.myprofil.active {
+    right: 0;
+    display: block;
+}
+
+.log {
+    padding: 0.5rem;
+}
+
+.log p{
+    font-weight: 700;
+    color: #004AAD;
+    font-size: 0.7rem;
 }
 
 
@@ -78,6 +105,7 @@
     .navbar-right {
         display: none;
     }
+
 
 
 

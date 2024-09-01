@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const { register, login, transactions,tes, activateAccount,authenticateToken,tranaksionId,agreed,change,updateState,invoice,findInvoice,identities,payout } = require('../controllers/userControllers')
+const { register, login, transactions,tes, activateAccount,authenticateToken,tranaksionId,agreed,change,updateState,invoice,findInvoice,identities,payout,verifyCaptcha } = require('../controllers/userControllers')
 
 const router = express.Router()
 const upload = multer({
@@ -31,7 +31,8 @@ router.patch('/updateState/:id',authenticateToken,updateState)
 router.post('/invoice',invoice);
 router.get('/findInvoice',findInvoice);  
 router.post('/upload',upload.fields([{name:'files',maxCount:3},{name:'files1',maxCount:3}]),identities);
-router.post('/payout',payout)
+router.post('/payout',payout);
+router.post('/api/verify-captcha',verifyCaptcha);
 router.get('/tes',tes)
 
 module.exports = router;

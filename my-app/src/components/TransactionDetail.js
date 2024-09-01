@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
+import {Link ,useLocation,useNavigate } from 'react-router-dom';
 import './TransactionDetail.css'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
@@ -21,6 +21,7 @@ const TransactionDetail = () => {
     const [adminFee, setAdminFee] = useState(0)
     const [emailDetail,setEmailDetail] = useState('')// Sesuaikan nilai default jika diperlukan
     const email = decodedToken.email;
+    const [isChecked,SetIsChecked] = useState(false)
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true)
@@ -42,8 +43,9 @@ const TransactionDetail = () => {
                     }
                 })
                 navigate(`/transaksi/${response.data.idTrx}`)
+                
                 } catch (err) {
-                console.log('Ada yang salah:', err)
+                    navigate('/login')
             }
             setLoading(false)
         }, 2000)
@@ -123,6 +125,9 @@ const TransactionDetail = () => {
     const harga = parseFloat(amount);
     const hargaTotal = harga + adminFee;
 
+    const handleChecked = () => {
+        SetIsChecked(!isChecked)
+    }
     return (
         <div className='container-detail'>
             <div className='detail'>
@@ -208,8 +213,19 @@ const TransactionDetail = () => {
                     )}
                 </div>
                 </div>
+                <div className='buttons'>
+                <label style={{display:'flex',marginTop:'2rem'}}>
+                <input style={{width:'2rem'}}
+                type='checkbox' 
+          checked={isChecked} 
+          onChange={handleChecked} 
+          required // Menandai checkbox harus dicentang
+        />
+        <p style={{color:'#545454',paddingTop:'0.9rem',paddingLeft:'0.5rem',fontSize:'0.9rem'}}>Saya telah membaca dan menyetujui <Link to='/Intructions'>Petunjuk Umum Rekber</Link> dan <Link to='/privacypolice'>Kebijakan privasi</Link></p>
+            </label>
+            </div> 
+                <button type='submit' disabled={loading || !isChecked}>{loading ? <div className= 'spinner'></div> : 'Buat Transaksi'}</button>
                 
-                <button type='submit' disabled={loading}>{loading ? <div className= 'spinner'></div> : 'Buat Transaksi'}</button>
             </form>
             </div>
             </div>

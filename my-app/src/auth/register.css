@@ -27,12 +27,12 @@
 }
 
 .register-form{
-    width:60%
+    width:80%
 }
 
 .register-form input {
     width:100%;
-    padding:0.5rem;
+    padding:0.6rem;
     color:#545454;
     border-radius:5px;
     margin-bottom: 10px;
@@ -41,11 +41,12 @@
 
 .register-form .submit button {
     width:100%;
-    padding:0.5rem;
+    padding:0.6rem;
     margin-top:2rem;
     background-color:#3cb95d;
     border-radius:5px;
     border:none;
+    font-size: 1.2rem;
     font-weight:600;
 }
 
@@ -56,7 +57,7 @@
     padding-top:4px;
     display: inline-block;
     color:#0000EE;
-    font-size: 0.8rem;
+    font-size: 1rem;
     text-decoration: none;
 }
 
@@ -68,7 +69,7 @@
 .login-submit p{
     color: black;
     margin-top: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
 }
 
 .login-submit .link{
@@ -78,3 +79,8 @@
     border: 1px solid #545454;
     border-radius: 5px;
 }
+
+.capcha {
+    margin:1rem 0;
+}
+

@@ -18,8 +18,7 @@ exports.authenticateToken= function(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) {
-      console.log(err)
+    if (err) { 
       return res.sendStatus(403);
     } 
     req.user = user;
@@ -312,6 +311,28 @@ exports.identities = async (req, res) => {
     res.status(500).json({ message: 'File upload failed', error: error.message });
   }
 };
+
+exports.verifyCaptcha = async (req, res) => {
+  const { token } = req.body;
+  console.log(token);
+
+  try {
+    const response = await axios.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      secret: process.env.CLOUDFLARE_KEY,
+      response: token
+    });
+    if (response.data.success) {
+      res.json({ success: true });
+    } else {
+      res.json({ success: false });
+    }
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'CAPTCHA validation failed' });
+  }
+};
+
 
 exports.tes = async(req,res) => {
   res.send('helllo world')

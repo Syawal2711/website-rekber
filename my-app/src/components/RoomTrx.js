@@ -43,6 +43,7 @@ const RoomTrx = () => {
   })
   const [id,setId] = useState('')
 
+
   useEffect(() => {
     if(transaksi && transaksi.step === 0) {
         setChangeData({
@@ -70,7 +71,6 @@ const RoomTrx = () => {
         setSellerAgree(response.data.sellerAgreed);
       } catch (error) {
         navigate('/login')
-        console.log('Error:', error)
       }
     }
   if(token) {
@@ -87,7 +87,7 @@ const RoomTrx = () => {
           })
           
           setStatus(response.data);
-          if(response.data === ('PAID' || 'SETTLED') && transaksi.beridentitas
+          if((response.data === 'PAID' || response.data === 'SETTLED') && transaksi.beridentitas
  === 'Tidak') {
   updateSteps()
           }
@@ -101,7 +101,7 @@ const RoomTrx = () => {
   
   useEffect(()=> {
     const identyStatus = async() => {
-      if(transaksi && transaksi.beridentitas === 'Ya' && transaksi.step === 1 && transaksi.identy && status === ('PAID' || 'SETTLED')) {
+      if(transaksi && transaksi.beridentitas === 'Ya' && transaksi.step === 1 && transaksi.identy &&( status === 'PAID' || status === 'SETTLED')) {
         updateSteps()
       }
     }
@@ -579,7 +579,7 @@ useEffect(() => {
           <div>
             <h4>Pembayaran</h4>
             {(status === 'PENDING' || status === null) && <p>Silahkan lakukan pembayaran ke syawalrekber.com untuk melanjutkan transaksi anda dengan mengklick tombol di bawah</p>}
-            {status === ('PAID' || 'SETTLED') && <p>Dana diterima menunggu pembeli selesai mengirimkan Identitasnya</p>}
+            {(status === 'PAID' ||status ===  'SETTLED') && <p>Dana diterima menunggu pembeli selesai mengirimkan Identitasnya</p>}
             <div className='button-payment'>
               {(!transaksi.id_invoice || null) &&  <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>}
               {transaksi.url_invoice && status === 'PENDING' && <button onClick={handleUrlPay}>Bayar Sekarang</button>}

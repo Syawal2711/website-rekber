@@ -86,7 +86,7 @@
     background-color: #3cb95d;
     border: none;
     border-radius: 5px;
-    margin: 2rem 1rem 10px 0 ;
+    margin: 1rem 1rem 10px 0 ;
     padding: 8px 1.5rem 8px 1.5rem;
     font-weight: 700;
     font-size: large;
@@ -106,5 +106,10 @@
     color: #545454;
     margin-top: 1rem;
     margin-bottom:8px ;
+}
+
+.buttons a {
+    color: blue;
+    text-decoration: none;
 }
 
