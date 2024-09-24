@@ -6,9 +6,7 @@ require('dotenv').config()
 const db = require('../config/db')
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
-const { auth } = require('googleapis/build/src/apis/abusiveexperiencereport');
 const axios = require('axios')
-const path = require('path')
 
 
 const ACCESS_TOKEN_SECRET = process.env.ACCSESS_TOKEN_SECRET;
@@ -18,8 +16,7 @@ exports.authenticateToken= function(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) {
-      console.log(err)
+    if (err) { 
       return res.sendStatus(403);
     } 
     req.user = user;
@@ -47,16 +44,16 @@ exports.register = async (req, res) => {
 
         const accessToken = await oAuth2Client.getAccessToken()
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: 'syawalrekber@gmail.com',
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: process.env.REFRESH_TOKEN,
-                accessToken: accessToken.token,
-            },
-        });
+          service: 'gmail',
+          auth: {
+              type: 'OAuth2',
+              user: 'syawalrekber@gmail.com',
+              clientId: process.env.CLIENT_ID,
+              clientSecret: process.env.CLIENT_SECRET,
+              refreshToken: process.env.REFRESH_TOKEN,
+              accessToken: accessToken.token,
+          },
+      });
 
         const mailOptions = {
             from: 'syawalrekber@gmail.com',
@@ -216,7 +213,7 @@ exports.change = async (req,res) => {
 }
 
 exports.invoice = async (req,res) => {
-  const {id, amount} = req.body;
+  const {id, amount, email, name} = req.body;
   try {
     const response = await axios({
       method: 'post',
@@ -228,6 +225,14 @@ exports.invoice = async (req,res) => {
       data: {
         external_id:id,
         amount,
+        customer: {
+          email
+        },
+        items: [{
+          name,
+          quantity:1,
+          price:amount
+        }],
         success_redirect_url: `https://bug-free-space-guacamole-5ggrq9r5776xfprg6-3000.app.github.dev/transaksi/${id}`,
         failure_redirect_url: "https://www.google.com",
       }
@@ -242,6 +247,7 @@ exports.invoice = async (req,res) => {
     }
    
   } catch (error) {
+    console.log(error)
     res.status(500).json({error: error.message})
   }
 }
@@ -291,6 +297,25 @@ exports.findInvoice = async (req,res) => {
   }
 }
 
+exports.findPayout = async (req, res) => {
+  const { id } = req.query; // Mengambil id dari query parameter
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://api.xendit.co/payouts/${id}`, // Pastikan ini benar
+      auth: {
+        username: process.env.XENDIT_KEY,
+        // password: '' // Jika tidak diperlukan, bisa dihapus
+      }
+    });
+    res.status(200).json(response.data.status);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 exports.identities = async (req, res) => {
   try {
     const images = req.files['files'];
@@ -312,6 +337,56 @@ exports.identities = async (req, res) => {
     res.status(500).json({ message: 'File upload failed', error: error.message });
   }
 };
+
+exports.verifyCaptcha = async (req, res) => {
+  const { token } = req.body;
+  console.log(token);
+
+  try {
+    const response = await axios.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      secret: process.env.CLOUDFLARE_KEY,
+      response: token
+    });
+    if (response.data.success) {
+      res.json({ success: true });
+    } else {
+      res.json({ success: false });
+    }
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'CAPTCHA validation failed' });
+  }
+};
+
+exports.mytrx = async (req,res) => {
+  const {email,value} = req.query;
+  console.log(value)
+  
+  const sql = `SELECT * FROM transactions WHERE buyer_email = ? OR seller_email = ? ORDER BY created_at DESC LIMIT ?`
+  
+  try {
+    const [ response ]= await db.execute(sql,[email,email,value]);
+    console.log(response.length)
+    res.status(200).json({msg:response})
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+exports.allTrx = async (req,res) => {
+  const { email } = req.query;
+
+  const sql = `SELECT * FROM transactions WHERE buyer_email = ? OR seller_email = ?`
+  try {
+    const [ response ] = await db.execute(sql,[email,email])
+    res.status(200).json(response.length)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
 
 exports.tes = async(req,res) => {
   res.send('helllo world')

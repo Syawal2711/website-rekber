@@ -9,7 +9,7 @@ const Instructions = () => {
     <p>Selamat datang di platform transaksi aman kami. Petunjuk Umum Rekber ini ("Petunjuk") menjelaskan bagaimana Syawalrekber.com mengelola transaksi antara pembeli dan penjual menggunakan layanan rekber kami. Dengan menggunakan layanan kami, Anda setuju untuk mematuhi Petunjuk ini.</p>
     </div>
     <div>
-        <h3>1.Ikhtisar Proses Rekber</h3>
+cd        <h3>1.Ikhtisar Proses Rekber</h3>
         <p><span>• Memulai Transaksi:</span> Setelah pembeli dan penjual menyepakati syarat-syarat transaksi, pembeli menyetor jumlah yang disepakati ke dalam akun rekber.</p>
         <p><span>• Verifikasi:</span> Kami akan memverifikasi detail transaksi dan mengonfirmasi penerimaan dana di akun rekber.</p>
         <p><span>• Pelepasan Dana:</span>  Setelah transaksi berhasil diselesaikan dan semua syarat terpenuhi, kami akan melepaskan dana kepada penjual.</p>

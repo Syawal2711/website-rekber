@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
+import {Link ,useLocation,useNavigate } from 'react-router-dom';
 import './TransactionDetail.css'
 import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode';
+import Navbar from './Navbar'
+import Footer from './Footer'
+import '../myprofil/mytrx.css';
+import { formatRupiah,calculateAdminFee } from '../all/allFunction';
 
 const TransactionDetail = () => {
     const location = useLocation();
@@ -15,12 +19,16 @@ const TransactionDetail = () => {
     const [loading, setLoading] = useState(false)
     const [product, setProduct] = useState(formData.product || '');
     const [amount, setAmount] = useState(formData.amount || '');
+    const [originalValue,setOriginalValue] = useState(formData.originalValue || '')
     const [description, setDescription] = useState(formData.description || '');
     const [beridentitas, setBeridentitas] = useState(formData.beridentitas || 'Ya');
     const [biayaAdmin, setBiayaAdmin] = useState('Pembeli');
     const [adminFee, setAdminFee] = useState(0)
     const [emailDetail,setEmailDetail] = useState('')// Sesuaikan nilai default jika diperlukan
     const email = decodedToken.email;
+    const [isChecked,SetIsChecked] = useState(false)
+
+    console.log(formData)
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true)
@@ -30,7 +38,7 @@ const TransactionDetail = () => {
                     email,
                     peran,
                     product,
-                    amount,
+                    amount : originalValue,
                     description,
                     beridentitas,
                     biayaAdmin,
@@ -42,60 +50,28 @@ const TransactionDetail = () => {
                     }
                 })
                 navigate(`/transaksi/${response.data.idTrx}`)
+                
                 } catch (err) {
-                console.log('Ada yang salah:', err)
+                    navigate('/login')
             }
             setLoading(false)
         }, 2000)
         
     }
+    
     useEffect(() => {
-        const calculateAdminFee = () => {
-            let amountValue = parseFloat(amount);
-            if (isNaN(amountValue)) {
-                return 0;
-            }
-            
-            let fee = 0;
-            
-            if (amountValue >= 1 && amountValue <= 20000) {
-                fee = 5000;
-            } else if (amountValue >= 21000 && amountValue <= 290000) {
-                fee = 10000;
-            } else if (amountValue >= 291000 && amountValue <= 490000) {
-                fee = 20000;
-            } else if (amountValue >= 491000 && amountValue <= 790000) {
-                fee = 25000;
-            } else if (amountValue >= 791000 && amountValue <= 900000) {
-                fee = 30000;
-            } else if (amountValue >= 901000 && amountValue <= 999000) {
-                fee = 40000;
-            } else if (amountValue >= 1000000 && amountValue <= 1999000) {
-                fee = 50000;
-            } else if (amountValue >= 2000000 && amountValue <= 2999000) {
-                fee = 60000;
-            } else if (amountValue >= 3000000 && amountValue <= 3999000) {
-                fee = 70000;
-            } else if (amountValue >= 4000000 && amountValue <= 10999000) {
-                fee = 80000;
-            } else if (amountValue >= 11000000 && amountValue <= 15999000) {
-                fee = 90000;
-            } else if (amountValue >= 16000000 && amountValue <= 20999000) {
-                fee = 100000;
-            } else if (amountValue >= 21000000 && amountValue <= 30000000) {
-                fee = 200000;
-            } else if (amountValue > 30000000) {
-                fee = 250000;
-            }
+        let amountValue = parseFloat(originalValue);
+        setAdminFee(calculateAdminFee(amountValue));
+    }, [originalValue]);
 
-    return fee;
-           
-        };
-        setAdminFee(calculateAdminFee());
-    }, [amount]);
-
+      const handleInputChange = (e) => {
+        const inputValue = e.target.value.replace(/[^0-9]/g, ""); // Hanya angka
+        setAmount(formatRupiah(inputValue));
+        setOriginalValue(inputValue); // Nilai asli tanpa format
+    };         
+    
     const totalPembeli = () => {
-        const amountValue = parseFloat(amount);
+        const amountValue = parseFloat(originalValue);
         if (isNaN(amountValue)) {
             return 0;
         }
@@ -108,7 +84,7 @@ const TransactionDetail = () => {
     }
 
     const totalPenjual = () => {
-        const amountValue = parseFloat(amount);
+        const amountValue = parseFloat(originalValue);
         if (isNaN(amountValue)) {
             return 0;
         } 
@@ -119,11 +95,18 @@ const TransactionDetail = () => {
             default : return amountValue;
         }
     }
+    const harga = parseFloat(originalValue);
+    const validHarga = !isNaN(harga) ? harga : 0;  // Gunakan nilai default 0 jika harga adalah NaN
+    const validAdminFee = !isNaN(adminFee) ? adminFee : 0;  // Pastikan adminFee juga valid
 
-    const harga = parseFloat(amount);
-    const hargaTotal = harga + adminFee;
+    const hargaTotal = validHarga + validAdminFee;
 
-    return (
+
+    const handleChecked = () => {
+        SetIsChecked(!isChecked)
+    }
+
+    return (<div id='transaksi-saya'><Navbar/>
         <div className='container-detail'>
             <div className='detail'>
                 <h1>Buat Transaksi</h1>
@@ -131,7 +114,7 @@ const TransactionDetail = () => {
             <form onSubmit={handleSubmit}>
             <div className='box-form'>
                 <label>
-                    <p>Saya Sebagai:</p>
+                    <p>Saya Sebagai</p>
                     <select name='peran' value={peran} onChange={(e) => setPeran(e.target.value)}>
                         <option value='Penjual'>Penjual</option>
                         <option value='Pembeli'>Pembeli</option>
@@ -144,13 +127,13 @@ const TransactionDetail = () => {
                 </label>
                 <br />
                 <label>
-                    <p>Harga:</p>
-                    <input type='number' name='amount' value={amount} onChange={(e) => setAmount(e.target.value)} required />
+                    <p>Harga</p>
+                    <input type='text' name='amount' value={amount} onChange={handleInputChange} required />
                 </label>
                 <br />
                 <div className='box-two'>
                 <label>
-                    <p>Beridentitas:</p>
+                    <p>Bergaransi</p>
                     <select name='beridentitas' value={beridentitas} onChange={(e) => setBeridentitas(e.target.value)} required>
                         <option value='Ya'>Ya</option>
                         <option value='Tidak'>Tidak</option>
@@ -159,7 +142,7 @@ const TransactionDetail = () => {
                 </div>
                 <br />
                 <label>
-                    <p>Deskripsi:</p>
+                    <p>Deskripsi</p>
                     <textarea name='description' value={description} onChange={(e) => setDescription(e.target.value)} required></textarea>
                 </label>
                 </div>
@@ -167,8 +150,8 @@ const TransactionDetail = () => {
                     <h4>Ringkasan Transaksi</h4>
                     < div className
                     ='item subtotal'>
-                    <p>Harga :</p>
-                    <p>Rp { amount || '0'}</p>
+                    <p>Harga</p>
+                    <p>{formatRupiah(originalValue)}</p>
                     </div>
                     <div className='item adminfee'>
                     <p>Biaya Transaksi Di Bayar: {<select name='biaya' value={biayaAdmin} onChange={(e) => setBiayaAdmin(e.target.value)}>
@@ -177,19 +160,19 @@ const TransactionDetail = () => {
                    <option value='50%/50%'>50%/50%</option>
                    </select>
                     }</p>
-                    <p>Rp {adminFee}</p>
+                    <p>{formatRupiah(adminFee)}</p>
                     </div>
                     <div className='item harga-total'>
                         <p>Total Harga</p>
-                        <p>Rp {hargaTotal || '0'}</p>
+                        <p>{formatRupiah(hargaTotal)}</p>
                     </div>
                     <div className='item harga-pembeli'>
                         <p>Harga Pembeli</p>
-                        <p>Rp {totalPembeli()}</p>
+                        <p>{formatRupiah(totalPembeli())}</p>
                     </div>
                     <div className='item'>
                         <p>Hasil Penjual</p>
-                        <p>Rp {totalPenjual()}</p>
+                        <p>{formatRupiah(totalPenjual())}</p>
                     </div>
                     <div className='email-detail'>
                     {peran === 'Pembeli' && (
@@ -208,12 +191,27 @@ const TransactionDetail = () => {
                     )}
                 </div>
                 </div>
+                <div className='buttons'>
+                <label style={{display:'flex',marginTop:'2rem'}}>
+                <input style={{width:'2rem'}}
+                type='checkbox' 
+          checked={isChecked} 
+          onChange={handleChecked} 
+          required // Menandai checkbox harus dicentang
+        />
+        <p style={{color:'#545454',paddingTop:'0.9rem',paddingLeft:'0.5rem',fontSize:'0.9rem'}}>Saya telah membaca dan menyetujui <Link to='/Intructions'>Petunjuk Umum Rekber</Link> dan <Link to='/privacypolice'>Kebijakan privasi</Link></p>
+            </label>
+            </div> 
+                <button type='submit' disabled={loading || !isChecked}>{loading ? <div className= 'spinner'></div> : 'Buat Transaksi'}</button>
                 
-                <button type='submit' disabled={loading}>{loading ? <div className= 'spinner'></div> : 'Buat Transaksi'}</button>
             </form>
             </div>
             </div>
         </div>
+        <div className='footer-mytrx'>
+        <Footer/>
+        </div>
+        </div> 
     );
 };
 

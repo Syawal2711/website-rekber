@@ -1,3 +1,4 @@
+
 *{
   color: white;
   font-family: "Montserrat", sans-serif;
@@ -6,6 +7,18 @@
   scroll-behavior: smooth;
   box-sizing: border-box;
 }
+
+.section {
+  color: black;
+  display: flex;
+  width:60rem;
+  max-width: 100%;
+  padding: 0 2rem;
+  margin:0 auto;
+  padding-bottom: 2rem;
+  align-items:center;
+}
+
 
 .button[disabled] {
   cursor: not-allowed;

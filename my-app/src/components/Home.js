@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import img1 from '../assets/images/img1.png';
+import img1 from '../assets/images/home.png';
 import './Home.css';
+import { formatRupiah } from '../all/allFunction';
 
 function Home() {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         peran: '',
         product: '',
         amount: '',
+        originalValue:'',
         beridentitas: ''
     });
-    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const inputValue = e.target.value.replace(/[^0-9]/g, "");
+        if (name === 'amount') {
+            setFormData({
+                ...formData,
+                amount : formatRupiah(inputValue),
+                originalValue : inputValue
+            });
+        }
+         else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
 
@@ -59,7 +71,7 @@ function Home() {
                         </div>
                         <div className='input-form'>
                             <input
-                                type="number"
+                                type="text"
                                 name="amount"
                                 placeholder="Jumlah"
                                 value={formData.amount}
@@ -69,7 +81,7 @@ function Home() {
                             
                         
                                 <select name="beridentitas" value={formData.beridentitas} onChange={handleChange}>
-                                    <option value='' disabled defaultValue>Beridentitas</option>
+                                    <option value='' disabled defaultValue>Bergaransi</option>
                                     <option value="Ya">Ya</option>
                                     <option value="Tidak">Tidak</option>
                                 </select>

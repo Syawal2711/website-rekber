@@ -1,20 +1,11 @@
-.section {
-    color: black;
-    display: flex;
-    width:60rem;
-    max-width: 100%;
-    padding: 0 2rem;
-    margin:0 auto;
-    padding-bottom: 2rem;
-    align-items:center;
-}
+
 
 .page {
     flex: 1;
 }
 
 .home-left {
-    padding-top: 3rem;
+    padding-top: 2rem;
     min-width:415px;
 }
 .home-left h1 {
@@ -78,16 +69,15 @@
     justify-content: center;
 }
 
-
-
 .img img{
     background-color: #004AAD;
     border-radius: 100%;
-    padding: 1.5rem;
     width: 10rem;
     height: auto;
     margin:1rem 2rem 1rem 2rem;
 }
+
+
 
 
 .title {
@@ -105,6 +95,10 @@
     margin-left:-13px ;
 }
 
+#footer {
+    position: relative
+}
+
 
 @media  screen and (min-width:750px) and ( max-width:980px) {
     .home-right {
@@ -113,6 +107,9 @@
     .img img {
         margin-left: -3.5rem
     }
+    .title {
+        width :300px
+    }
 }
 
 @media screen and (min-width:510px) and (max-width:749px) {
@@ -120,7 +117,7 @@
         flex-wrap: wrap;
     }
     .home-right {
-        justify-content: center;
+        justify-content: start;
     }
     .img img {
         margin-left: 0;
@@ -131,20 +128,28 @@
     .home-left {
         justify-content: center;
     }
+
+    .title p {
+        padding-bottom:0.5rem
+    }
 }
 
 @media screen and (max-width:509px) {
     .section {
-        flex-wrap: wrap;
         flex-direction: column;
     }
     .home-left,.home-left h1,.home-left p {
         min-width: auto;
     }
     .home-right {
-        flex-wrap: wrap;
+       flex-wrap:wrap;
+        justify-content:center;
     }
     .img img {
-        margin-left: -3.5rem
+        margin-left: 0
+    }
+    .title p {
+        padding-bottom:0.5rem;
+    
     }
 }

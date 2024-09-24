@@ -4,6 +4,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { motion } from 'framer-motion';
 
 export default function AccordionExpandDefault() {
 
@@ -15,7 +16,18 @@ export default function AccordionExpandDefault() {
     <>
     <div id='faq' style={{width:'60rem',maxWidth:'100%',margin:'0 auto',padding:'2rem'
     }}>
-    <h1 style={{color:'black', margin:'0',borderTop:'1px solid #D9D9D9',paddingTop:'3rem'}}>Frequently Asked Questions</h1>
+    <motion.h1
+    initial={{
+      opacity:0,
+      x:-50
+    }}
+    whileInView={{
+      opacity:1,
+      x:0
+    }}
+    transition={{duration:'0.8'}}
+    viewport={{ once: true }}
+     style={{color:'black', margin:'0',borderTop:'1px solid #D9D9D9',paddingTop:'3rem'}}>Frequently Asked Questions</motion.h1>
     </div>
     <div style={{width:'60rem',maxWidth:'100%',padding:'2rem',margin:'0 auto'}}>
       <Accordion style={style} defaultExpanded>
@@ -42,7 +54,7 @@ export default function AccordionExpandDefault() {
         </AccordionSummary>
         <AccordionDetails>
           <Typography style={{color:'#545454'}}>
-          Silahkan mengisi formulir transaksi setelah itu anda akan diarahkan ke halaman ruangan transaksi untuk melanjutkan proses transaksi
+          Silahkan mengisi formulir transaksi setelah itu anda akan diarahkan ke halaman ruangan transaksi untuk melakukan proses transaksi Anda
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -94,7 +106,7 @@ export default function AccordionExpandDefault() {
         <p style={{color:'#545454',fontWeight:'600'}}>Jenis Transaksi yang di perbolehkan?</p>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography style={{color:'#545454'}}>kami membantu semua jenis transaksi kecuali barang/jasa ilegal
+          <Typography style={{color:'#545454'}}>Kami menyediakan dukungan untuk semua jenis transaksi, kecuali yang berkaitan dengan barang atau jasa ilegal.
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -108,7 +120,7 @@ export default function AccordionExpandDefault() {
         </AccordionSummary>
         <AccordionDetails>
           <Typography style={{color:'#545454'}}>
-          Kami akan mengirimi penjual email pembayaran ke kami dan setelah transaksi selesai kami akan mengirimi penjual email pembayaran sesuai nominal yang di tentukan
+          Kami akan mengirimkan email konfirmasi pembayaran kepada penjual setelah menerima transaksi dari Anda. Setelah transaksi selesai, kami juga akan mengirimkan email yang berisi rincian pembayaran sesuai dengan jumlah yang telah ditentukan.
           </Typography>
         </AccordionDetails>
       </Accordion>

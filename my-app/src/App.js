@@ -9,6 +9,7 @@ import PrivateRoute from './PrivateRoute';
 import Transaksi from './components/RoomTrx'
 import Instructions from './agreed/Instructions' // Pastikan path sesuai dengan lokasi PrivateRoute
 import PrivacyPolice from './agreed/PrivacyPolice';
+import MyTransaksi from './myprofil/mytrx'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
               <Transaksi/>
             </PrivateRoute>
           }/>
+          <Route path='/transaksisaya' element={<MyTransaksi/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='*' element={<Navigate to='/login'/>}/>
           <Route path='/Intructions' element={<Instructions/>}/>

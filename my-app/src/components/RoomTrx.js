@@ -14,7 +14,10 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-
+import Navbar from './Navbar';
+import Footer from './Footer';
+import '../myprofil/mytrx.css';
+import { formatRupiah,calculateAdminFee } from '../all/allFunction';
 
 
 const RoomTrx = () => {
@@ -43,6 +46,7 @@ const RoomTrx = () => {
   })
   const [id,setId] = useState('')
 
+
   useEffect(() => {
     if(transaksi && transaksi.step === 0) {
         setChangeData({
@@ -54,6 +58,7 @@ const RoomTrx = () => {
         });
     }
   }, [transaksi]);
+
 
 
   useEffect(() => {
@@ -70,7 +75,6 @@ const RoomTrx = () => {
         setSellerAgree(response.data.sellerAgreed);
       } catch (error) {
         navigate('/login')
-        console.log('Error:', error)
       }
     }
   if(token) {
@@ -87,7 +91,7 @@ const RoomTrx = () => {
           })
           
           setStatus(response.data);
-          if(response.data === ('PAID' || 'SETTLED') && transaksi.beridentitas
+          if((response.data === 'PAID' || response.data === 'SETTLED') && transaksi.beridentitas
  === 'Tidak') {
   updateSteps()
           }
@@ -98,10 +102,30 @@ const RoomTrx = () => {
       }}
         invoiceStatus();
   },[transaksi]);
+
+  useEffect(() => {
+    const payoutStatus = async () => {
+      if(transaksi && transaksi.id_payout && transaksi.step === 3) {
+        try {
+          const response = await axios.get('/auth/findPayout', {
+            params: {
+              id : transaksi.id_payout
+            }
+          })
+          if(response.data === 'COMPLETED') {
+            updateSteps()
+          }
+        } catch (error) {
+          console.error('Error:', error)
+        }
+      }
+    }
+    payoutStatus()
+  },[transaksi])
   
   useEffect(()=> {
     const identyStatus = async() => {
-      if(transaksi && transaksi.beridentitas === 'Ya' && transaksi.step === 1 && transaksi.identy && status === ('PAID' || 'SETTLED')) {
+      if(transaksi && transaksi.beridentitas === 'Ya' && transaksi.step === 1 && transaksi.identy &&( status === 'PAID' || status === 'SETTLED')) {
         updateSteps()
       }
     }
@@ -134,48 +158,11 @@ const RoomTrx = () => {
   }
 },[buyerAgree,sellerAgree,steps])
 
-const calculateAdminFee = (amountValue) => {
-  if (isNaN(amountValue)) return 0;
-  
-  let fee = 0;
-
-  if (amountValue >= 1 && amountValue <= 20000) {
-      fee = 5000;
-  } else if (amountValue >= 21000 && amountValue <= 290000) {
-      fee = 10000;
-  } else if (amountValue >= 291000 && amountValue <= 490000) {
-      fee = 20000;
-  } else if (amountValue >= 491000 && amountValue <= 790000) {
-      fee = 25000;
-  } else if (amountValue >= 791000 && amountValue <= 900000) {
-      fee = 30000;
-  } else if (amountValue >= 901000 && amountValue <= 999000) {
-      fee = 40000;
-  } else if (amountValue >= 1000000 && amountValue <= 1999000) {
-      fee = 50000;
-  } else if (amountValue >= 2000000 && amountValue <= 2999000) {
-      fee = 60000;
-  } else if (amountValue >= 3000000 && amountValue <= 3999000) {
-      fee = 70000;
-  } else if (amountValue >= 4000000 && amountValue <= 10999000) {
-      fee = 80000;
-  } else if (amountValue >= 11000000 && amountValue <= 15999000) {
-      fee = 90000;
-  } else if (amountValue >= 16000000 && amountValue <= 20999000) {
-      fee = 100000;
-  } else if (amountValue >= 21000000 && amountValue <= 30000000) {
-      fee = 200000;
-  } else if (amountValue > 30000000) {
-      fee = 250000;
-  }
-
-  return fee;
-};
 
 useEffect(() => {
   if( transaksi && transaksi.step === 0) {
     const amountValue = parseFloat(changeData.amount);
-  const newAdminFee = calculateAdminFee(amountValue);
+    const newAdminFee = calculateAdminFee(amountValue);
 
   setChangeData(prevState => ({
     ...prevState,
@@ -200,7 +187,7 @@ useEffect(() => {
 
 
   const identy = () => {
-    window.location.href = `https://wa.me/6281524575677?text=Identitas+saya+sebagai+penjual+pada+transaksi+dengan+id+*${transaksi.transaction_id}*`
+    window.location.href = `https://wa.me/6287831531101?text=Identitas+saya+sebagai+penjual+pada+transaksi+dengan+id+*${transaksi.transaction_id}*`
   
   }
   const handleSubmit = async(field,fields) => {
@@ -228,7 +215,9 @@ useEffect(() => {
     try {
       const response = await axios.post('/auth/invoice',{
         id:transaksiId,
-        amount: totalPembeli()
+        amount: totalPembeli(),
+        email:transaksi.buyer_email,
+        name:transaksi.product
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -330,16 +319,21 @@ useEffect(() => {
   }
 
   return (
-  <>
+  <div id='transaksi-saya'>
+    <Navbar/>
+    <div style={{backgroundColor:'#e84855',alignItems:'center',padding:'0.5rem',fontSize:'1rem',textAlign:'center'}}>
+      Apabila Anda Butuh Bantuan Dengan Transaksi Anda Silahkan Hubungi Kami !!
+    </div>
     <div className='container-transaksi'>
       <div className='judul'>
       <h1>{steps === 0 && (<div>Persetujuan</div>)}
       {steps === 1 && (<div>Pembayaran</div>)}
       {steps === 2 && (<div>Transaksi</div>)}
       {steps === 3 && (<div>Pencairan</div>)}
-      {steps === 4 && (<div>Selesai</div>)}
+      {steps === 4 && (<div>Transaksi Selesai</div>)}
+      {transaksi.status ==='Cancelled' && (<div>Transaksi Batal</div>)}
       </h1>
-      <p>IDtrx:{transaksi.transaction_id}</p>
+      <p>ID:{transaksi.transaction_id}</p>
       </div>
       <div className='p'>
         <p>{transaksi.buyer_email} membeli {transaksi.product} dari {transaksi.seller_email}</p>
@@ -363,26 +357,37 @@ useEffect(() => {
     >
       <Step label="Persetujuan" />
       <Step label="Pembayaran" />
-      <Step label="Tranaksi" />
+      <Step label="Transaksi" />
       <Step label="Pencairan" />
     </Stepper>
-    {steps === 0 && (
-      <p>Kedua belah pihak harus menyetujui transksi di bawah untuk melanjutkan transaksi</p>
+    { steps === 0 && (
+      <p>Kedua belah pihak harus menyetujui transksi di bawah ini untuk melanjutkan transaksi.</p>
     )}
     {steps === 1 && (<>
     {transaksi.beridentitas === 'Tidak' && (
-      <p>Pembeli Melakukan Pembayaran Ke Syawalrekber.com Untuk Melanjutkan Transaksi</p>
+      <p>Pembeli Melakukan Pembayaran Ke SyawalRekber.com Untuk Melanjutkan Transaksi</p>
     )}
     {transaksi.beridentitas === 'Ya' && (
-      <p>Pembeli Melakukan Pembayaran Ke Syawalrekber.com Dan Penjual Mengiriman Identitasnya.</p>
+      <p>Pembeli Melakukan Pembayaran Ke SyawalRekber.com Dan Penjual Mengirimkan Identitasnya.</p>
     )}
     </>)}
     {steps === 2 && (
-      <p>Dana diterima,silahkan lakukan transaksi anda</p>
+      <>
+      {transaksi.beridentitas === 'Tidak' && (
+         <p>Dana diterima,Silahkan lakukan transaksi Anda</p>
+      )}
+      {transaksi.beridentitas === 'Ya' && (
+       <p>Dana diterima dan identitas penjual telah diverifikasi. Silakan lakukan transaksi Anda.</p> 
+      )}
+      </>
     )}
     {steps === 3 && (
-      <p>Pembayaran Ke Penjual sebesar IDR {totalPenjual()}</p>
+      <p>Pembayaran Ke Penjual sebesar {formatRupiah(totalPenjual())}</p>
     )}
+    {steps === 4 && (
+      <p>Terimah kasih telah menggunakan layanan rekber kami</p>
+    )}
+    {transaksi.status ==='Cancelled' && (<div>Transaksi Anda Di Batalkan</div>)}
     </div>
     <div className='proses'>
       {steps === 0 && (
@@ -391,7 +396,7 @@ useEffect(() => {
           <div>
             <h4>Setujui Transaksi</h4>
             {buyerAgree && <p>Anda sudah meneyetujui transaksi ini menunggu persetujuan dari pihak pembeli</p>}
-            {!buyerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Apabila anda telah setuju anda sudah tidak bisa lagi mengubah transaksi kecuali penjual mengubah transaksi lagi.</p>}
+            {!buyerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Jika anda telah setuju,Anda sudah tidak bisa lagi mengubah transaksi kecuali penjual mengubah transaksi lagi.</p>}
            <div className = 'button-agree'>
             <div className='setuju'>
             {!buyerAgree && <button onClick={agreeBuyer}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
@@ -459,7 +464,7 @@ useEffect(() => {
           <div>
           <h4>Setujui Transaksi</h4>
           {sellerAgree && <p>Anda sudah meneyetujui transaksi ini menunggu persetujuan dari pihak Pembeli</p>}
-          {!sellerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Apabila anda telah setuju anda sudah tidak bisa lagi mengubah transaksi kecuali Pembeli mengubah transaksi lagi.</p>}
+          {!sellerAgree && <p>Lihat dan setujui transaksi yang di buat pada {transaksi.created_at.substring(0,10)}.Jika anda telah setuju,Anda sudah tidak bisa lagi mengubah transaksi kecuali Pembeli mengubah transaksi lagi.</p>}
          <div className = 'button-agree'>
           <div className='setuju'>
             {!sellerAgree && <button onClick={agreeSeller}disabled={loading} >{loading ? <div className='spinner'></div>:'Setuju'}</button>}
@@ -481,7 +486,7 @@ useEffect(() => {
       >
         <Fade in={open}>
           <Box sx={style} className='modals'>
-            <h4 style={{color:'#01426a', marginBottom:'1rem'}}>Ubah  ketentuan tranaksi anda</h4>
+            <h4 style={{color:'#01426a', marginBottom:'1rem'}}>Ubah  ketentuan Tranaksi Anda</h4>
             <p style={{color: '#545454',fontSize:'1rem',marginBottom:'1rem'}}>Setelah konfirmasi, kami akan memberitahu pembeli untuk meninjau pembaruan yang telah Anda buat</p>
             <div className='modal-change'>
               <form onSubmit={changeSeller}>
@@ -523,7 +528,6 @@ useEffect(() => {
          </div>
         </div>
         )}
-        
         </>
       )}
       {steps === 1 && (
@@ -538,10 +542,10 @@ useEffect(() => {
           )}
           {transaksi.beridentitas === 'Ya' && (
             <div>
-              <h4>Transaksi Beridentitas</h4>
+              <h4>Transaksi Bergaransi</h4>
               <div className='step-identy'>
-            <p>1.Anda harus mengirimkan 2 Identitas yang menunjukkan alamat Anda ke whatsapp kami</p>
-            <p>2.Identitas harus jelas dan apabila identitas kurang jelas kami akan menyuruh anda mengirim ulang identitas dengan kualitas yang lebih baik.
+            <p>1. Transaksi Bergaransi. Anda dimohon untuk mengirimkan 2 identitas yang menunjukkan alamat Anda ke WhatsApp kami.</p>
+            <p>2. Identitas harus jelas. Jika identitas yang dikirim kurang jelas, kami akan meminta Anda untuk mengirim ulang dengan kualitas yang lebih baik.
             </p>
             </div>
               <div className='button-payment'>
@@ -563,8 +567,8 @@ useEffect(() => {
           <Box sx={style}>
             <div className='container-identity'>
             <h4 style={{color:'#01426a',marginBottom:'0.5rem'}}>Kirimkan 2 Identitas anda</h4>
-            <p style={{marginBottom:'10px'}}>Silahkan pilih dua identitas yang menunjukkan alamat Anda. Foto identitas dan ambil juga foto selfie sambil memegang identitas.</p>
-            <p style={{marginBottom:'2rem'}}>Tulis nama Anda dan nama website kami,serta tanggal dan waktu saat ini pada selembar kertas. Kemudian ambil foto sambil memegang kertas tersebut.</p>
+            <p style={{marginBottom:'10px'}}>Silakan pilih dua identitas yang menunjukkan alamat Anda. Sertakan foto identitas dan ambil juga foto selfie sambil memegang identitas tersebut.</p>
+            <p style={{marginBottom:'2rem'}}>Tuliskan nama Anda, nama SyawalRekber.com, serta tanggal dan waktu saat ini pada selembar kertas. Kemudian, ambil foto sambil memegang kertas tersebut.</p>
             <button onClick={identy}>Kirim Identitas</button>
             </div>
           </Box>
@@ -578,8 +582,8 @@ useEffect(() => {
         {transaksi.buyer_email === email && (
           <div>
             <h4>Pembayaran</h4>
-            {(status === 'PENDING' || status === null) && <p>Silahkan lakukan pembayaran ke syawalrekber.com untuk melanjutkan transaksi anda dengan mengklick tombol di bawah</p>}
-            {status === ('PAID' || 'SETTLED') && <p>Dana diterima menunggu pembeli selesai mengirimkan Identitasnya</p>}
+            {(status === 'PENDING' || status === null) && <p>Silakan lakukan pembayaran ke SyawalRekber.com untuk melanjutkan transaksi Anda dengan mengklik tombol di bawah.</p>}
+            {(status === 'PAID' ||status ===  'SETTLED') && <p>Dana telah diterima. Menunggu pembeli untuk mengirimkan identitasnya kepada admin kami.</p>}
             <div className='button-payment'>
               {(!transaksi.id_invoice || null) &&  <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>}
               {transaksi.url_invoice && status === 'PENDING' && <button onClick={handleUrlPay}>Bayar Sekarang</button>}
@@ -593,7 +597,8 @@ useEffect(() => {
         {transaksi.buyer_email === email && (
           <div>
             <h4>Bertransaksi</h4>
-            <p>Dana diterima,silahkan lakukan transaksi ke penjual,dan apabila anda telah menerima barang/jasanya dari pembeli silahkan klik tombol dibawah untuk mencairkan dana ke penjual </p>
+            <p>Silahkan lakukan transaksi anda ke penjual,dan apabila anda telah menerima barang/jasa dari Penjual silahkan klik tombol dibawah untuk mencairkan dana ke penjual </p>
+            <p></p>
             <div className='button-payment'>
               <button onClick={handleOpen} disabled={loading}>Barang diterima</button>
               <Modal
@@ -623,7 +628,7 @@ useEffect(() => {
         {transaksi.seller_email === email && (
              <div>
              <h4>Bertransaksi</h4>
-             <p>Dana diterima dari pembeli,silahkan lakukan transaksi ke pembeli,dan apabila pembeli sudah mengkonfirmasi bahwa barang/jasanya sudah di terimah kami akan mengirimkan pembayaran ke email anda.
+             <p>Silahkan lakukan transaksi Anda ke Pembeli,dan apabila Pembeli telah mengkonfirmasi terima barang/jasa dari Anda, kami akan mengirimkan email pembayaran ke alamat email Anda.
              </p>
            </div>
           )}
@@ -634,15 +639,27 @@ useEffect(() => {
         {transaksi.seller_email === email && (
           <div>
             <h4>Pembayaran</h4>
-            <p>terima Kasih telah melakukan transaksi di syawalrekber.com,kami telah mengirimkan anda email email pembayaran ke email anda</p>
+            <p>Terima kasih telah melakukan transaksi Anda di SyawalRekber.com. Kami telah mengirimkan pembayaran ke alamat email Anda.</p>
+      
           </div>
         )}
         {transaksi.buyer_email === email && (
           <div>
             <h4>Pembayaran</h4>
-            <p>Terima Kasih telah melakukan transaksi di syawalrekber.com,kami telah mengirimkan email pembyaran ke penjual</p>
+            <p>Terima kasih telah melakukan transaksi Anda di SyawalRekber.com. Kami telah mengirimkan email pembayaran kepada penjual.</p>
           </div>
         ) }
+        </>
+      )}
+      {steps === 4 && (<>
+        <h4>Transaksi Selesai</h4>
+        <p>Transaksi Anda telah selesai! Terima kasih telah menggunakan layanan rekber kami. Kami berharap pengalaman ini memuaskan untuk Anda.</p>
+        </>
+      )}
+      { transaksi.status ==='Cancelled' && (
+        <>
+        <h4>Dibatalkan</h4>
+        <p>Transaksi Anda telah dibatalkan. Jika Anda memiliki pertanyaan atau memerlukan bantuan lebih lanjut, jangan ragu untuk menghubungi kami.</p>
         </>
       )}
     </div>
@@ -655,29 +672,29 @@ useEffect(() => {
        </div>
        <div className='trx'>
         <p>Harga</p>
-        <p>IDR {parseFloat(transaksi.amount)}</p>
+        <p>{formatRupiah(parseFloat(transaksi.amount))}</p>
        </div>
        <div className='trx'>
-        <p>Beridentitas</p>
+        <p>Bergaransi</p>
         <p>{transaksi.beridentitas}</p>
        </div>
        <div className='trx'>
         <p>Biaya Admin  Di Bayar <br/> {transaksi.admin_paid_by}
         </p>
-        <p>IDR {parseFloat(transaksi.admin_fee)}</p>
+        <p>{formatRupiah(parseFloat(transaksi.admin_fee))}</p>
        </div>
       <div className='trx'>
         <p>Total Harga</p>
-        <p>IDR {parseFloat(transaksi.amount) + parseFloat(transaksi.admin_fee)}</p>
+        <p>{formatRupiah(parseFloat(transaksi.amount) + parseFloat(transaksi.admin_fee))}</p>
       </div>
       <div className= 'result'></div>
       <div className='trx'>
         <p>Harga Pembeli</p>
-        <p>IDR {totalPembeli()}</p>
+        <p>{formatRupiah(totalPembeli())}</p>
       </div>
       <div className='trx'>
         <p>Hasil Penjual</p>
-        <p>IDR {totalPenjual()}</p>
+        <p>{formatRupiah(totalPenjual())}</p>
       </div>
     </div>
     <div className='trx-detail'>
@@ -695,7 +712,7 @@ useEffect(() => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography style={{color:'#545454'}}>
-          Proses transaksi berlangsung hingga pembeli menerima barang/jasanya.
+          Proses transaksi berlangsung hingga pembeli mengkonfirmasi terima barang/jasa.
           </Typography>
         </AccordionDetails>
       </Accordion>
@@ -721,18 +738,20 @@ useEffect(() => {
         <p style={{color:'#545454'}}>Bagaimana jika terjadi sengketa dalam transaksi?</p>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography style={{color:'#545454'}}>Jika terjadi sengketa antara pembeli dan penjual, kami akan melakukan mediasi untuk memastikan transaksi di selesaikan dengan adil.Silakan hubungi kami dengan memberikan  detail lengkap sengketa agar kami dapat menyelesaikannya secepat mungkin
+          <Typography style={{color:'#545454'}}>Jika terjadi sengketa antara pembeli dan penjual, kami akan melakukan mediasi untuk memastikan transaksi di selesaikan dengan adil.Silahkan hubungi kami dengan memberikan  detail lengkap sengketa agar kami dapat menyelesaikannya secepat mungkin
           </Typography>
         </AccordionDetails>
       </Accordion>
       </div>
     </div>
-    <div style={{position:'fixed',bottom:'1rem',right:'1rem'}}><Link to='https://wa.me/6281524575677'>
+    <div style={{position:'fixed',bottom:'1rem',right:'1rem',zIndex:'999'}}><Link to='https://wa.me/6287831531101'>
     <WhatsAppIcon style={{width:'4rem', height:'auto',backgroundColor:'#3cb95d',padding:'0.3rem',borderRadius:'50%'}}/>
     </Link>
-    
     </div>
-    </>
+    <div className='footer-mytrx'>
+      <Footer/>
+    </div>
+    </div>
   )
 }
 

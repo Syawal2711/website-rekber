@@ -9,7 +9,7 @@ import Instagram from '@mui/icons-material/Instagram';
 
 const Footer = () => {
     return (
-        <div id='footer' style={{ backgroundColor: '#01426a', position: 'relative', paddingBottom: '5rem' }}>
+        <div id='footer'>
             <div className='footer'>
                 <div style={{ flex: '1' }}>
                     <h2 style={{ marginBottom: '2rem' }}>Syawalrekber.com</h2>
@@ -17,15 +17,15 @@ const Footer = () => {
                         Jasa Rekening Bersama Terpercaya. Transaksi jarak jauh mudah & aman dari penipuan
                     </p>
                     <button style={{ backgroundColor: '#3cb95d', border: 'none', borderRadius: '5px', padding: '8px 1.5rem', fontSize: '1rem', fontWeight: '700', marginTop: '2rem' }}>
-                        Transaksi Sekarang
+                        <Link to='/detail' style={{textDecoration:'none'}}>Transaksi Sekarang</Link>
                     </button>
                 </div>
                 <div className='footers' style={{ flex: '1' }}>
                     <p>Navigasi</p>
-                    <Link className='link'>Home</Link>
-                    <Link className='link'>Tata Cara</Link>
-                    <Link className='link'>Biaya Transaksi</Link>
-                    <Link className='link'>FAQ</Link>
+                    <Link to='/#home' className='link'>Home</Link>
+                    <Link to='/#tutorial' className='link'>Tata Cara</Link>
+                    <Link to='/#list-fee' className='link'>Biaya Transaksi</Link>
+                    <Link to='/#faq' className='link'>FAQ</Link>
                 </div>
 
                 <div className='footers' style={{ flex: '1'}}>
@@ -44,7 +44,8 @@ const Footer = () => {
             <div className='footer-img'>
                 <div style={{ color: 'white' }}>
                     <h1 style={{marginBottom:'2rem'}}>Mau tanya-tanya dulu ke admin? Hubungi kami di Whatsapp</h1>
-                    <Link style={{ textDecoration: 'none',padding:'8px',borderRadius:'5px',backgroundColor:'#3cb95d',fontWeight:'600',display:'flex',alignItems:'center',gap:'0.5rem',
+                    <Link
+                    to='https://wa.me/6287831531101' style={{ textDecoration: 'none',padding:'8px',borderRadius:'5px',backgroundColor:'#3cb95d',fontWeight:'600',display:'flex',alignItems:'center',gap:'0.5rem',
                     width:'12rem',
                     justifyContent:'center'
                     }}>{<WhatsAppIcon/>} Chat Whatsapp</Link>
