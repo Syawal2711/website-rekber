@@ -9,6 +9,7 @@ const { google } = require('googleapis');
 const axios = require('axios')
 
 
+
 const ACCESS_TOKEN_SECRET = process.env.ACCSESS_TOKEN_SECRET;
 // Middleware untuk mengautentikasi token akses
 exports.authenticateToken= function(req, res, next) {
@@ -24,10 +25,23 @@ exports.authenticateToken= function(req, res, next) {
   });
 }
 
+const transporter = nodemailer.createTransport({
+  secure:true,
+  host:'smtp.gmail.com',
+  port:465,
+  auth: {
+   user:process.env.SENDMAIL_USER,
+   pass: process.env.SENDMAIL_PASS
+  }
+});
 
-const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET,process.env.REDIRECT_URI);
-oAuth2Client.setCredentials({ refresh_token:process.env.REFRESH_TOKEN });
-
+function sendMail(to,sub,msg) {
+  transporter.sendMail({
+    to:to,
+    subject:sub,
+    html:msg
+  })
+}
 
 exports.register = async (req, res) => {
     const { email, password } = req.body;
@@ -41,26 +55,8 @@ exports.register = async (req, res) => {
         await db.execute(
           'INSERT INTO users (email, password,activationToken,isActive) VALUES (?,?,?,?)',
           [email, hashedPassword,activationToken,false]);
-
-        const accessToken = await oAuth2Client.getAccessToken()
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-              type: 'OAuth2',
-              user: 'syawalrekber@gmail.com',
-              clientId: process.env.CLIENT_ID,
-              clientSecret: process.env.CLIENT_SECRET,
-              refreshToken: process.env.REFRESH_TOKEN,
-              accessToken: accessToken.token,
-          },
-      });
-
-        const mailOptions = {
-            from: 'syawalrekber@gmail.com',
-            to: 's19199346@gmail.com',
-            subject: 'Aktifkan Akun Anda',
-            html:`<div style="font-family: Arial, Helvetica, sans-serif;">
-        <h1 style="background-color: #004AAD;text-align:center; padding:1rem 0;color: white;">Syawalrekber.com</h1>
+        sendMail('s19199346@gmail.com','Aktifkan Akun Anda',`<div style="font-family: Arial, Helvetica, sans-serif;">
+        <h1 style="background-color: #004AAD;text-align:center; padding:1rem 0;color: white;">SyawalRekber.com</h1>
         <div style="margin: 0.5rem; border: 1px solid #545454; border-radius: 5px;padding:1rem 2rem;">
             <h2 style="font-weight: 600;color:black;">Selamat Datang di Syawalrekber.com</h2>
             <p style="color: #545454;">Untuk memulai menggunakan akun Anda,harap verifikasi alamat email Anda dengan mengklick tombol di bawah</p>
@@ -68,19 +64,11 @@ exports.register = async (req, res) => {
                 <button style="background-color: blue; padding: 0.5rem; width: 60%;border: none; border-radius: 5px; font-weight: 100;color: white;margin-bottom: 2rem;margin-top:1rem;"><a href="${process.env.CLIENT_URL}/activate/${activationToken}" style="text-decoration: none;color:white;font-weight:600;">Verifikasi Sekarang</a></button>
             </div>
         </div>
-    </div>`
-        };
-        transporter.sendMail(mailOptions,(err, info) => {
-          if(err) {
-            return
-            console.log(err)
-          }
-          console.log('Email sent:', info.response);
-        });
-        res.status(201).json({ message: 'Berhasil Membuat Akun Anda,cek email anda untuk mengaktifkan akun anda' });
+    </div>`)
+        res.status(201).json({ message: 'Berhasil Membuat Akun Anda,cek email anda untuk mengaktifkan akun Anda' });
       } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
-          res.status(409).json({ message: 'Email Sudah Ada' });
+          res.status(409).json({ message: 'Email Sudah Terdaftar' });
         } else {
           console.log(err)
           res.status(500).json({ message: 'Internal server error' });
@@ -139,9 +127,18 @@ exports.login = async (req, res) => {
     if (peran === 'Pembeli') {
       sellerEmail = emailDetail;
       buyerEmail = email;
-      console.log(1,buyerEmail,sellerEmail)
     } 
     await db.execute(query, [shortUUID, buyerEmail, sellerEmail, product, amount, description, beridentitas, adminFee, biayaAdmin]);
+    sendMail(emailDetail,'Persetujuan Transaksi',`<div>
+  <h1 style="text-align:center;background-color:#004AAD; padding:2rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <p style="padding:4rem 1rem 2rem 1rem;">Hi <a style="color:blue;">${emailDetail}</a>,</p>
+  <p style="width:80%;padding:0 0 2rem 1rem"><a style="color:blue;">${email}</a> telah membuat transaksi dengan Anda di Syawalrekber.com</p>
+  <p style="width:95%;padding:0 0 2rem 1rem">Harap tinjau persyaratannya dan segera setujui transaksinya.</p>
+  <div style="text-align:center;">
+    <a href="${process.env.CLIENT_URL}/transaksi/${shortUUID}" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">Lihat Dan Setujui</a>
+  </div>
+</div>
+`)
     return res.json({ idTrx: shortUUID });
   } catch (error) {
     console.error('Gagal mengeksekusi transaksi:', error);
@@ -340,8 +337,6 @@ exports.identities = async (req, res) => {
 
 exports.verifyCaptcha = async (req, res) => {
   const { token } = req.body;
-  console.log(token);
-
   try {
     const response = await axios.post('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       secret: process.env.CLOUDFLARE_KEY,
@@ -352,7 +347,6 @@ exports.verifyCaptcha = async (req, res) => {
     } else {
       res.json({ success: false });
     }
-    console.log(response.data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'CAPTCHA validation failed' });
