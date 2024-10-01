@@ -1,9 +1,14 @@
 import React from 'react'
 import './agreed.css'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 const Instructions = () => {
-    return(<div className='instructions'>
-    <h2>Petunjuk Umum Rekber</h2>
+    return(
+        <div id='transaksi-saya'>
+            <Navbar/>
+    <div className='instructions'>
+    <h2 style={{textAlign:'center'}}>Petunjuk Umum Rekber</h2>
     <div>
     <h3>Pendahuluan</h3>
     <p>Selamat datang di platform transaksi aman kami. Petunjuk Umum Rekber ini ("Petunjuk") menjelaskan bagaimana Syawalrekber.com mengelola transaksi antara pembeli dan penjual menggunakan layanan rekber kami. Dengan menggunakan layanan kami, Anda setuju untuk mematuhi Petunjuk ini.</p>
@@ -16,8 +21,8 @@ cd        <h3>1.Ikhtisar Proses Rekber</h3>
     </div>
     <div>
         <h3>2.Kewajiban Pembeli dan Penjual</h3>
-        <p><span>• Kewajiban Pembeli</span>:Pembeli harus menyetor jumlah penuh ke dalam akun rekber dan memastikan semua detail transaksi sudah benar.</p>
-        <p><span>• Kewajiban Penjual</span>:Penjual harus menyediakan barang/jasa sesuai kesepakatan dan menyerahkan dokumentasi yang diperlukan.
+        <p><span>• Kewajiban Pembeli:</span> Pembeli harus menyetor jumlah penuh ke dalam akun rekber dan memastikan semua detail transaksi sudah benar.</p>
+        <p><span>• Kewajiban Penjual:</span> Penjual harus menyediakan barang/jasa sesuai kesepakatan dan menyerahkan dokumentasi yang diperlukan.
         </p>
     </div>
     <div>
@@ -35,14 +40,17 @@ cd        <h3>1.Ikhtisar Proses Rekber</h3>
     </div>
     <div>
         <h3>Batasan Tanggung Jawab</h3>
-        <p>Syawalrekber.com tidak akan bertanggung jawab atas kerugian tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan layanan rekber kami.</p>
+        <p>SyawalRekber.com tidak akan bertanggung jawab atas kerugian tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan layanan rekber kami.</p>
     </div>
     <div>
         <h3>Perubahan</h3>
         <p>Kami berhak untuk mengubah Instruksi ini kapan saja. Penggunaan layanan kami yang berkelanjutan setelah ada perubahan berarti Anda menerima syarat-syarat baru.
         </p>
     </div>
-    </div>)
+    </div>
+    <Footer/>
+    </div>
+)
 }
 
 export default Instructions

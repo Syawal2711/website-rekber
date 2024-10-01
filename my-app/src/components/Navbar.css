@@ -61,6 +61,11 @@
     text-decoration:none
 }
 
+.line-navbar {
+    display: none;
+    border-top: 1px solid #d9d9d9;
+    width: 100%;
+}
 
 @media screen and (min-width:768px) and (max-width:1066px) {
 
@@ -103,7 +108,9 @@
 
     .menu-auth {
         display: block;
+        padding-top: 10px;
     }
+
 
     .nav-item a{
         color: #545454;
@@ -112,6 +119,10 @@
     }
     .navbar-right {
         display: none;
+    }
+
+    .line-navbar {
+        display: block;
     }
 
 

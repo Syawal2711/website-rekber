@@ -1,9 +1,13 @@
 import React from 'react'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 const PrivacyPolice = () => {
   return (
-    <div className='instructions'>
-        <h2>Privacy Police</h2>
+    <div id='transaksi-saya' >
+        <Navbar/>
+    <div className='instructions' >
+        <h2 style={{textAlign:'center'}}>Privacy Police</h2>
         <div>
             <h3>Pendahuluan</h3>
             <p>Di SyawalRekber.com, kami berkomitmen untuk melindungi privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat Anda menggunakan situs web dan layanan kami.</p>
@@ -41,9 +45,12 @@ const PrivacyPolice = () => {
         <div>
             <h3>7.Hubungi Kami</h3>
             <p>
-            Jika Anda memiliki pertanyaan atau kekhawatiran tentang Kebijakan Privasi ini atau bagaimana kami menangani informasi Anda, silakan hubungi kami di [Informasi Kontak Anda].
+            Jika Anda memiliki pertanyaan atau kekhawatiran tentang Kebijakan Privasi ini atau bagaimana kami menangani informasi Anda, silakan hubungi kami.
             </p>
         </div>
+        
+    </div>
+    <Footer/>
     </div>
   )
 }

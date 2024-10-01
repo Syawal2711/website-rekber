@@ -191,6 +191,7 @@ useEffect(() => {
   
   }
   const handleSubmit = async(field,fields) => {
+    const mail = field === 'sellerAgreed' ? transaksi.seller_email : transaksi.buyer_email;
     try {
       await axios.patch(`/auth/change/${transaksiId}`, {
         beridentitas : changeData.identitas,
@@ -199,7 +200,8 @@ useEffect(() => {
         alasan : changeData.alasan,
         field,
         fields,
-        admin_fee: changeData.admin_fee
+        admin_fee: changeData.admin_fee,
+        email: mail
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -419,7 +421,7 @@ useEffect(() => {
         <Fade in={open}>
           <Box sx={style} className='modals'>
             <h4 style={{color:'#01426a', marginBottom:'1rem'}}>Ubah  ketentuan tranaksi anda</h4>
-            <p style={{color: '#545454',fontSize:'1rem',marginBottom:'1rem'}}>Setelah konfirmasi, kami akan memberitahu penjual untuk meninjau pembaruan yang telah Anda buat</p>
+            <p style={{color: '#545454',fontSize:'1rem',marginBottom:'1rem'}}>Setelah konfirmasi, kami akan memberitahu Penjual untuk meninjau pembaruan yang telah Anda buat</p>
             <div className='modal-change'>
               <form onSubmit={changeBuyer}>
               <div>

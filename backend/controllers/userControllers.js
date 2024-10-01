@@ -76,12 +76,13 @@ exports.register = async (req, res) => {
       }}
 exports.activateAccount = async (req,res) => {
   const {token} = req.params
+  console.log(token)
   try {
-    const [ result ] = await db.execute('UPDATE users SET isActive = ? WHERE activationToken = ?', [true,token]);
+    const [ result ] = await db.execute('UPDATE users SET isActive = ?, activationToken = NULL WHERE activationToken = ?', [true,token]);
   if(result.affectedRows === 0){
-    return res.status(400).send('Gaga Mengaktifkan akun')
+    return res.status(400).send('Gagal Mengaktifkan akun')
   }
-  res.status(200).send('Akun Anda Sudah Aktif')
+  res.status(200).send('Akun Anda telah aktif')
   } catch (error) {
     console.log(error);
     res.status(500).send('Server Error')
@@ -197,12 +198,12 @@ exports.updateState = async (req,res) => {
 
 exports.change = async (req,res) => {
   const {id} =req.params;
-  const {beridentitas,admin_paid_by, amount, alasan,field,fields,admin_fee} = req.body;
+  const {beridentitas,admin_paid_by, amount, alasan,field,fields,admin_fee,email} = req.body;
   const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ?, ${field} = ?, ${fields} = ?, admin_fee = ? WHERE transaction_id
  = ?`;
   try {
     await db.execute(query,[amount,beridentitas,admin_paid_by,false,true,admin_fee,id])
-    console.log('berhasill')
+    console.log(email);
     return res.status(200).send('succes change data')
   } catch (error) {
     console.log('Error:',error)
@@ -230,7 +231,7 @@ exports.invoice = async (req,res) => {
           quantity:1,
           price:amount
         }],
-        success_redirect_url: `https://bug-free-space-guacamole-5ggrq9r5776xfprg6-3000.app.github.dev/transaksi/${id}`,
+        success_redirect_url: `${process.env.CLIENT_URL}/transaksi/${id}`,
         failure_redirect_url: "https://www.google.com",
       }
     });

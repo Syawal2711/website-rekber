@@ -95,28 +95,27 @@ function Navbar() {
                         <Link to="/#footer" onClick={handleItemClick}>Contact</Link>
                     </div>
                     {!token && (
-                        <div style={{ borderTop: '1px solid #d9d9d9', width: '100%', paddingTop: '10px' }} className="nav-item menu-auth">
+                        <div className='line-navbar'>
+                        <div style={{ paddingTop: '15px' }} className="nav-item menu-auth">
                             <Link to='/register'>Buat Akun</Link>
                         </div>
-                    )}
-                    {!token && (
-                        <div className="nav-item menu-auth">
-                            <Link to='/login'>Login</Link>
-                        </div>
+                         <div className="nav-item menu-auth">
+                         <Link to='/login'>Login</Link>
+                     </div>
+                     </div>
                     )}
                     {token && (
-                        <div style={{ borderTop: '1px solid #d9d9d9', width: '100%', paddingTop: '10px' }} className="nav-item menu-auth">
+                        <div className='line-navbar'>
+                        <div style={{paddingTop:'15px'}} className="nav-item menu-auth">
+                            <Link to='/detail'>Buat Transaksi</Link>
+                        </div>
+                       <div className="nav-item menu-auth">
                             <Link to='/transaksisaya'>Transaksi Saya</Link>
                         </div>
-                    )}
-                    {token && (
                         <div className="nav-item menu-auth">
-                            <Link to='/'>Profil Saya</Link>
+                            <Link to='/'
+                            onClick={handleClearToken}>Log out</Link>
                         </div>
-                    )}
-                    {token && (
-                        <div className="nav-item menu-auth">
-                            <Link to='/' onClick={handleClearToken}>Log out</Link>
                         </div>
                     )}
                 </div>
@@ -164,7 +163,7 @@ function Navbar() {
                                     justifyContent: 'center',
                                     lineHeight: '2rem',
                                     cursor: 'pointer'
-                                }}>S
+                                }}>{email ? email.charAt(0).toUpperCase() : ''}
                                 </div>
                             </div>
                         )}
@@ -191,7 +190,7 @@ function Navbar() {
                                 lineHeight: '3rem',
                                 fontSize: '1.5rem',
                                 fontWeight: '700'
-                            }}>S</div>
+                            }}>{email ? email.charAt(0).toUpperCase() : ''}</div>
                             <p style={{
                                 fontSize: '0.8rem',
                                 color: '#545454',
@@ -200,7 +199,7 @@ function Navbar() {
                             }}>{email}</p>
                         </div>
                         <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
-                            <Link to='/profil-saya'>Profil Saya</Link>
+                            <Link to='/detail'>Buat Transaksi</Link>
                         </div>
                         <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
                             <Link to='/transaksisaya'>Transaksi Saya</Link>

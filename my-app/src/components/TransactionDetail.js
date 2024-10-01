@@ -27,11 +27,36 @@ const TransactionDetail = () => {
     const [emailDetail,setEmailDetail] = useState('')// Sesuaikan nilai default jika diperlukan
     const email = decodedToken.email;
     const [isChecked,SetIsChecked] = useState(false)
-
-    console.log(formData)
+    const [msgError,setErrorMsg] = useState({
+        amount: '',
+        description: '',
+        product: ''
+    })
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true)
+        if(originalValue < 10000) {
+            setLoading(false)
+            setErrorMsg(prev => ({ ...prev, amount: 'Transaksi minimal Rp 10,000' }));
+        return;
+        }
+        if(originalValue >= 500000000) {
+            setLoading(false)
+            setErrorMsg(prev => ({...prev, amount: 'Transaksi maksimal Rp 500.000.000'}))
+            return;
+        }
+
+        if (product.length >= 30) {
+            setLoading(false);
+            setErrorMsg(prev => ({ ...prev, product: 'Nama Barang maksimal 30 kata' }));
+            return;
+        }
+        if(description.length >= 250) {
+            setLoading(false);
+            setErrorMsg(prev => ({...prev, description: 'Deskripsi maksimal 250 kata'}))
+            return;
+        }
+
         setTimeout( async () => {
             try {
                 const response = await axios.post('/auth/transactions',{
@@ -110,7 +135,7 @@ const TransactionDetail = () => {
         <div className='container-detail'>
             <div className='detail'>
                 <h1>Buat Transaksi</h1>
-                <div className='box-detail'>
+                <div className='box-detail'>   
             <form onSubmit={handleSubmit}>
             <div className='box-form'>
                 <label>
@@ -123,12 +148,14 @@ const TransactionDetail = () => {
                 <br />
                 <label>
                     <p>Barang/Jasa</p>
-                    <input type='text' name='product' value={product} onChange={(e) => setProduct(e.target.value)} required />
+                    <input type='text' name='product' value={product} onChange={(e) => setProduct(e.target.value)} required/>
+                    <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.product}</p1>
                 </label>
                 <br />
                 <label>
                     <p>Harga</p>
-                    <input type='text' name='amount' value={amount} onChange={handleInputChange} required />
+                    <input type='text' name='amount' placeholder='Rp 100.000' value={amount} onChange={handleInputChange} required />
+                    <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.amount}</p1>
                 </label>
                 <br />
                 <div className='box-two'>
@@ -138,6 +165,7 @@ const TransactionDetail = () => {
                         <option value='Ya'>Ya</option>
                         <option value='Tidak'>Tidak</option>
                     </select>
+                    <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.description}</p1>
                 </label>
                 </div>
                 <br />
@@ -178,14 +206,14 @@ const TransactionDetail = () => {
                     {peran === 'Pembeli' && (
                         <>
                         <h4>Detail Penjual</h4>
-                        <p>Masukka Email Penjual:</p>
+                        <p>Masukka Email Penjual</p>
                         <input type='email' value={emailDetail} onChange={(e) => setEmailDetail(e.target.value)} required />
                         </>
                     )}
                     {peran === 'Penjual' && (
                         <>
                         <h4>Detail Pembeli</h4>
-                        <p>Masukkan Email Pembeli:</p>
+                        <p>Masukkan Email Pembeli</p>
                         <input type='email' value={emailDetail} onChange={(e) => setEmailDetail(e.target.value)} required />
                         </>
                     )}

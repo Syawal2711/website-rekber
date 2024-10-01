@@ -50,8 +50,8 @@ function Home() {
         <div style={{backgroundColor:'#01426a'}}>
         <div id="home" className="section">
             <div className='page home-left'>
-                <h1>Jangan Pernah Membeli Atau Menjual Barang Secara Online Tanpa Menggunakan Syawalrekber.com</h1>
-                <p>Dengan Syawalrekber.com Anda Dapat Membeli Dan Menjual Apapun Dengan Aman</p>
+                <h1>Jangan Pernah Membeli Atau Menjual Barang Secara Online Tanpa Menggunakan SyawalRekber.com</h1>
+                <p>Dengan SyawalRekber.com Anda Dapat Membeli Dan Menjual Apapun Dengan Aman</p>
                 <div className='form'>
                     <form onSubmit={handleSubmit}>    
                         <div className='input-form'>
@@ -63,20 +63,18 @@ function Home() {
                             <input
                                 type="text"
                                 name="product"
-                                placeholder="Produk/Jasa"
+                                placeholder="Barang/Jasa"
                                 value={formData.product}
                                 onChange={handleChange}
-                                required
                             /> 
                         </div>
                         <div className='input-form'>
                             <input
                                 type="text"
                                 name="amount"
-                                placeholder="Jumlah"
+                                placeholder="Harga"
                                 value={formData.amount}
                                 onChange={handleChange}
-                                required
                             /> 
                             
                         

@@ -34,7 +34,7 @@ const Login = () => {
         script.onload = () => {
           if (captchaContainer && !captchaContainer.hasChildNodes()) {
             window.turnstile.render(captchaContainer, {
-              sitekey: '0x4AAAAAAAh9vHiEogp48N7u',
+              sitekey: '0x4AAAAAAAtgAGLEayq_gU6J',
               callback: (response) => {
                 console.log('CAPTCHA response:', response); // Debugging line
                 setToken(response); // Store the response token
