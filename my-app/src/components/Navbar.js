@@ -11,7 +11,7 @@ function Navbar() {
     const menuIconRef = useRef(null);
     const token = localStorage.getItem('accessToken');
     
-    let decodedToken;
+    let decodedToken = null;
     if (token) {
         try {
             decodedToken = jwtDecode(token);
@@ -20,10 +20,9 @@ function Navbar() {
         }
     }
 
-    // Mendapatkan email jika token berhasil didekode
     const email = decodedToken ? decodedToken.email : null;
 
-    const checkAndRemoveToken = (token) => {
+    const checkAndRemoveToken = () => {
         if (decodedToken && decodedToken.exp) {
             const currentTime = Math.floor(Date.now() / 1000);
             if (decodedToken.exp < currentTime) {
@@ -34,14 +33,14 @@ function Navbar() {
         return false;
     };
 
-    // Cek dan hapus token saat komponen di-render
     useEffect(() => {
-        checkAndRemoveToken(token);
-    }, [token]);
+        checkAndRemoveToken();
+    }, []);
 
     const handleMenu = () => {
         setMenu(prevMenu => !prevMenu);
     };
+
     const handleProfil = () => {
         setProf(prevProf => !prevProf);
     };
@@ -49,7 +48,8 @@ function Navbar() {
     const handleClickOutside = (e) => {
         if (navRef.current && !navRef.current.contains(e.target) &&
             menuIconRef.current && !menuIconRef.current.contains(e.target)) {
-            setProf(false)
+            setProf(false);
+            setMenu(false);
         }
     };
 
@@ -65,22 +65,20 @@ function Navbar() {
     };
 
     const handleClearToken = () => {
-        localStorage.removeItem('accessToken')
-    }
+        localStorage.removeItem('accessToken');
+        setProf(false);
+        setMenu(false);
+    };
 
     return (
         <div style={{ backgroundColor: '#01426a', width: '100%' }}>
             <nav className="navbar">
-                <div>
+                <div className="title">
                     <h1>SyawalRekber.com</h1>
                 </div>
-                <div ref={navRef} className={`navbar-nav ${menu ? 'active' : ''}`}
-                
-                >
+                <div ref={navRef} className={`navbar-nav ${menu ? 'active' : ''}`}>
                     <div className="nav-item">
-                        <Link to="/#home"
-                        onClick={handleItemClick}
-                        >Home</Link>
+                        <Link to="/#home" onClick={handleItemClick}>Home</Link>
                     </div>
                     <div className="nav-item">
                         <Link to="/#tutorial" onClick={handleItemClick}>Tata Cara</Link>
@@ -94,39 +92,33 @@ function Navbar() {
                     <div className="nav-item">
                         <Link to="/#footer" onClick={handleItemClick}>Contact</Link>
                     </div>
-                    {!token && (
+                    {!token ? (
                         <div className='line-navbar'>
-                        <div style={{ paddingTop: '15px' }} className="nav-item menu-auth">
-                            <Link to='/register'>Buat Akun</Link>
+                            <div style={{ paddingTop: '15px' }} className="nav-item menu-auth">
+                                <Link to='/register'>Buat Akun</Link>
+                            </div>
+                            <div className="nav-item menu-auth">
+                                <Link to='/login'>Login</Link>
+                            </div>
                         </div>
-                         <div className="nav-item menu-auth">
-                         <Link to='/login'>Login</Link>
-                     </div>
-                     </div>
-                    )}
-                    {token && (
+                    ) : (
                         <div className='line-navbar'>
-                        <div style={{paddingTop:'15px'}} className="nav-item menu-auth">
-                            <Link to='/detail'>Buat Transaksi</Link>
-                        </div>
-                       <div className="nav-item menu-auth">
-                            <Link to='/transaksisaya'>Transaksi Saya</Link>
-                        </div>
-                        <div className="nav-item menu-auth">
-                            <Link to='/'
-                            onClick={handleClearToken}>Log out</Link>
-                        </div>
+                            <div style={{ paddingTop: '15px' }} className="nav-item menu-auth">
+                                <Link to='/detail'>Buat Transaksi</Link>
+                            </div>
+                            <div className="nav-item menu-auth">
+                                <Link to='/transaksisaya'>Transaksi Saya</Link>
+                            </div>
+                            <div className="nav-item menu-auth">
+                                <Link to='/' onClick={handleClearToken}>Log out</Link>
+                            </div>
                         </div>
                     )}
                 </div>
                 <div style={{ display: "flex", gap: '10px' }}>
                     <div className='navbar-right'>
-                        {!token && (
-                            <div style={{gap:'1rem',
-                                display:'flex',
-                                alignItems:'center'
-                            }}>
-
+                        {!token ? (
+                            <div style={{ gap: '1rem', display: 'flex', alignItems: 'center' }}>
                                 <div className='login'>
                                     <Link to='/login' style={{ textDecoration: 'none' }}>Login</Link>
                                 </div>
@@ -139,9 +131,8 @@ function Navbar() {
                                     textDecoration: 'none'
                                 }}>Buat Akun</Link>
                             </div>
-                        )}
-                        {token && (
-                            <div style={{ display: 'flex', gap: '1rem', alignItems: "center" }}>
+                        ) : (
+                            <div className="createtrx">
                                 <Link to='/detail' style={{
                                     backgroundColor: '#3cb95d',
                                     padding: '8px 1.5rem',
@@ -150,7 +141,7 @@ function Navbar() {
                                     borderRadius: '5px',
                                     textDecoration: 'none'
                                 }}>Buat Trx</Link>
-                                <div onClick={handleProfil} ref={menuIconRef} style={{
+                                <div ref={menuIconRef} onClick={handleProfil} style={{
                                     borderRadius: '50%',
                                     backgroundColor: '#004AAD',
                                     fontSize: 'large',
@@ -163,51 +154,56 @@ function Navbar() {
                                     justifyContent: 'center',
                                     lineHeight: '2rem',
                                     cursor: 'pointer'
-                                }}>{email ? email.charAt(0).toUpperCase() : ''}
+                                }}>
+                                    {email ? email.charAt(0).toUpperCase() : ''}
                                 </div>
                             </div>
                         )}
                     </div>
                     <div className='menu'>
-                        <MenuIcon onClick={handleMenu} style={{ alignItems: 'center', width: "2.5rem", height: 'auto' }} />
+                        <MenuIcon ref={menuIconRef} onClick={handleMenu} style={{ alignItems: 'center', width: "2.5rem", height: 'auto' }} />
                     </div>
-                    <div ref={navRef} className={`myprofil ${prof ? 'active' : ''}`}>
-                        <div style={{
-                            display: 'flex',
-                            gap: "1rem",
-                            padding: '0.8rem',
-                            borderBottom: '1px solid #d9d9d9'
-                        }}>
+                    {prof && (
+                        <div ref={navRef} className={`myprofil active`}>
                             <div style={{
-                                backgroundColor: '#004AAD',
-                                width: '3rem',
-                                height: '3rem',
-                                borderRadius: '50%',
                                 display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center',
-                                lineHeight: '3rem',
-                                fontSize: '1.5rem',
-                                fontWeight: '700'
-                            }}>{email ? email.charAt(0).toUpperCase() : ''}</div>
-                            <p style={{
-                                fontSize: '0.8rem',
-                                color: '#545454',
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}>{email}</p>
+                                gap: "1rem",
+                                padding: '0.8rem',
+                                borderBottom: '1px solid #d9d9d9'
+                            }}>
+                                <div style={{
+                                    backgroundColor: '#004AAD',
+                                    width: '3rem',
+                                    height: '3rem',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    textAlign: 'center',
+                                    lineHeight: '3rem',
+                                    fontSize: '1.5rem',
+                                    fontWeight: '700'
+                                }}>
+                                    {email ? email.charAt(0).toUpperCase() : ''}
+                                </div>
+                                <p style={{
+                                    fontSize: '0.8rem',
+                                    color: '#545454',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}>{email}</p>
+                            </div>
+                            <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
+                                <Link to='/detail'>Buat Transaksi</Link>
+                            </div>
+                            <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
+                                <Link to='/transaksisaya'>Transaksi Saya</Link>
+                            </div>
+                            <div className='log'>
+                                <Link to='/' onClick={handleClearToken}>Log Out</Link>
+                            </div>
                         </div>
-                        <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
-                            <Link to='/detail'>Buat Transaksi</Link>
-                        </div>
-                        <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
-                            <Link to='/transaksisaya'>Transaksi Saya</Link>
-                        </div>
-                        <div className='log'>
-                            <Link to='/' onClick={handleClearToken}>Log Out</Link>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </nav>
         </div>

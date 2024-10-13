@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './register.css';
+import Navbar from '../components/Navbar';
 
 const Login = () => {
   const location = useLocation();
   const message = location.state?.message;
-
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
@@ -15,6 +15,7 @@ const Login = () => {
   const [token, setToken] = useState('');
 
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const captchaContainer = captchaRef.current; // Simpan referensi elemen CAPTCHA
@@ -34,7 +35,7 @@ const Login = () => {
         script.onload = () => {
           if (captchaContainer && !captchaContainer.hasChildNodes()) {
             window.turnstile.render(captchaContainer, {
-              sitekey: '0x4AAAAAAAtgAGLEayq_gU6J',
+              sitekey: process.env.REACT_APP_SITE_KEY,
               callback: (response) => {
                 console.log('CAPTCHA response:', response); // Debugging line
                 setToken(response); // Store the response token
@@ -88,7 +89,8 @@ const Login = () => {
     }
   };
 
-  return (
+  return (<>
+  <Navbar/>
     <div className='container-register'>
       <div className='register-form'>
         <form onSubmit={handleSubmit}>
@@ -124,7 +126,7 @@ const Login = () => {
             <button type='submit' disabled={loading}>
               {loading ? <div className='spinner'></div> : 'Masuk'}
             </button>
-            <Link to='/forgotpassword' className='forgot'>Lupa Password</Link>
+            <Link to='/forgot/password' className='forgot'>Lupa Password</Link>
           </div>
           <div className='login-submit'>
             <p>Atau</p>
@@ -133,6 +135,7 @@ const Login = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

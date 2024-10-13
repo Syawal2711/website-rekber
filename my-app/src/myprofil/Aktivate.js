@@ -1,20 +1,20 @@
 import React,{useEffect} from 'react'
 import axios from 'axios'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams,  useNavigate } from 'react-router-dom'
 
 const Aktivate = () => {
     const {token} = useParams();
-    console.log(token)
-    console.log('haiiiiiii')
     const navigate = useNavigate()
     useEffect(() => {
-        const aktif = async() => {
+        const aktif = () => {
+          setTimeout(async() => {
             try {
-                const response = await axios.get(`/auth/activate/${token}`)
-                navigate('/login')
-            } catch (error) {
-                console.log('Error:',error)
-            }
+              await axios.get(`/auth/activate/${token}`)
+               navigate('/login')
+           } catch (error) {
+               console.log('Error:',error)
+           }
+          },2000)
         }
         aktif()
     },[token,navigate])

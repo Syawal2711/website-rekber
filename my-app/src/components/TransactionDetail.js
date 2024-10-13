@@ -30,7 +30,8 @@ const TransactionDetail = () => {
     const [msgError,setErrorMsg] = useState({
         amount: '',
         description: '',
-        product: ''
+        product: '',
+        email:''
     })
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -56,7 +57,11 @@ const TransactionDetail = () => {
             setErrorMsg(prev => ({...prev, description: 'Deskripsi maksimal 250 kata'}))
             return;
         }
-
+        if(email === emailDetail) {
+            setLoading(false)
+            setErrorMsg(prev => ({...prev, email : 'Anda memasukkan email Anda sendiri'}))
+            return;
+        }
         setTimeout( async () => {
             try {
                 const response = await axios.post('/auth/transactions',{
@@ -165,13 +170,13 @@ const TransactionDetail = () => {
                         <option value='Ya'>Ya</option>
                         <option value='Tidak'>Tidak</option>
                     </select>
-                    <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.description}</p1>
                 </label>
                 </div>
                 <br />
                 <label>
                     <p>Deskripsi</p>
                     <textarea name='description' value={description} onChange={(e) => setDescription(e.target.value)} required></textarea>
+                    <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.description}</p1>
                 </label>
                 </div>
                 <div className='ringkasan'>
@@ -208,13 +213,16 @@ const TransactionDetail = () => {
                         <h4>Detail Penjual</h4>
                         <p>Masukka Email Penjual</p>
                         <input type='email' value={emailDetail} onChange={(e) => setEmailDetail(e.target.value)} required />
+                        <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.email}</p1>
                         </>
+
                     )}
                     {peran === 'Penjual' && (
                         <>
                         <h4>Detail Pembeli</h4>
                         <p>Masukkan Email Pembeli</p>
                         <input type='email' value={emailDetail} onChange={(e) => setEmailDetail(e.target.value)} required />
+                        <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.email}</p1>
                         </>
                     )}
                 </div>

@@ -76,7 +76,8 @@ const Mytrx = () => {
         
 
   return (
-  <div id='transaksi-saya' style={{height:'100%',position:'relative',margin:'0 auto'}}>
+  <div id='transaksi-saya' style={{margin:'0 auto',minHeight:'100vh',display: 'flex',flexDirection:'column'}}>
+    <div style={{flex:'1'}}>
     <Navbar/>
     <div className='section styletr'style={{display:'block'}}>
             <h1 style={{color:'#01426a',textAlign:'center',padding:'2rem 0 1rem 0'}}>Transaksi Saya</h1>
@@ -146,9 +147,8 @@ const Mytrx = () => {
         }}>{loading ? <div className='spinner'></div> : 'Load More'}</button>}
         </div>
     </div>
-    <div className='footer-mytrx'>
-    <Footer />
     </div>
+    <Footer/>
     </div>
   )
 }

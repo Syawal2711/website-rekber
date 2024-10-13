@@ -67,13 +67,21 @@
     width: 100%;
 }
 
-@media screen and (min-width:768px) and (max-width:1066px) {
+.createtrx {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+@media screen and (min-width:920px) and (max-width:1066px) {
 
     .navbar {
         width: 100%;
         padding: 1rem 0.5rem;
         width: none;
     }
+}
+@media screen and (min-width:768px) and (max-width:919px) {
     .navbar-nav {
         display: none;
     }

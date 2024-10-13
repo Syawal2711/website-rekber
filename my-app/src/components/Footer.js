@@ -27,7 +27,6 @@ const Footer = () => {
                     <Link to='/#list-fee' className='link'>Biaya Transaksi</Link>
                     <Link to='/#faq' className='link'>FAQ</Link>
                 </div>
-
                 <div className='footers' style={{ flex: '1'}}>
                     <p>Contact</p>
                     <Link className='link'>{<WhatsAppIcon/>} 

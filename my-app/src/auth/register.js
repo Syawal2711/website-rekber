@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './register.css';
+import Navbar from '../components/Navbar';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +33,7 @@ const Register = () => {
         script.onload = () => {
           if (captchaContainer && !captchaContainer.hasChildNodes()) {
             window.turnstile.render(captchaContainer, {
-              sitekey: '0x4AAAAAAAtgAGLEayq_gU6J',
+              sitekey: process.env.REACT_APP_SITE_KEY,
               callback: (response) => {
                 console.log('CAPTCHA response:', response); // Debugging line
                 setToken(response); // Store the response token
@@ -101,6 +102,8 @@ const Register = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className='container-register'>
       <div className='register-form'>
         <form onSubmit={handleSubmit}>
@@ -153,6 +156,7 @@ const Register = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

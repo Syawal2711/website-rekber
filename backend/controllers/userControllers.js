@@ -25,6 +25,14 @@ exports.authenticateToken= function(req, res, next) {
   });
 }
 
+const formatrupiah = (value) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(value);
+};
+
 const transporter = nodemailer.createTransport({
   secure:true,
   host:'smtp.gmail.com',
@@ -55,8 +63,8 @@ exports.register = async (req, res) => {
         await db.execute(
           'INSERT INTO users (email, password,activationToken,isActive) VALUES (?,?,?,?)',
           [email, hashedPassword,activationToken,false]);
-        sendMail('s19199346@gmail.com','Aktifkan Akun Anda',`<div style="font-family: Arial, Helvetica, sans-serif;">
-        <h1 style="background-color: #004AAD;text-align:center; padding:1rem 0;color: white;">SyawalRekber.com</h1>
+        sendMail(email,'Aktifkan Akun Anda',`<div style="font-family: Arial, Helvetica, sans-serif;">
+        <h1 style="background-color: #01426a;text-align:center; padding:1rem 0;color: white;">SyawalRekber.com</h1>
         <div style="margin: 0.5rem; border: 1px solid #545454; border-radius: 5px;padding:1rem 2rem;">
             <h2 style="font-weight: 600;color:black;">Selamat Datang di Syawalrekber.com</h2>
             <p style="color: #545454;">Untuk memulai menggunakan akun Anda,harap verifikasi alamat email Anda dengan mengklick tombol di bawah</p>
@@ -75,8 +83,7 @@ exports.register = async (req, res) => {
         }
       }}
 exports.activateAccount = async (req,res) => {
-  const {token} = req.params
-  console.log(token)
+  const {token} = req.params;
   try {
     const [ result ] = await db.execute('UPDATE users SET isActive = ?, activationToken = NULL WHERE activationToken = ?', [true,token]);
   if(result.affectedRows === 0){
@@ -115,7 +122,7 @@ exports.login = async (req, res) => {
 
   exports.transactions = async (req, res) => {
   const { email, peran, product, amount, description, beridentitas, biayaAdmin, adminFee, emailDetail } = req.body;
-  const shortUUID = uuidv4().substr(0, 6);
+  const shortUUID = uuidv4().substr(0, 8);
   
   const query = 'INSERT INTO transactions (transaction_id, buyer_email, seller_email, product, amount, description, beridentitas, admin_fee, admin_paid_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
@@ -130,15 +137,24 @@ exports.login = async (req, res) => {
       buyerEmail = email;
     } 
     await db.execute(query, [shortUUID, buyerEmail, sellerEmail, product, amount, description, beridentitas, adminFee, biayaAdmin]);
-    sendMail(emailDetail,'Persetujuan Transaksi',`<div>
-  <h1 style="text-align:center;background-color:#004AAD; padding:2rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
-  <p style="padding:4rem 1rem 2rem 1rem;">Hi <a style="color:blue;">${emailDetail}</a>,</p>
-  <p style="width:80%;padding:0 0 2rem 1rem"><a style="color:blue;">${email}</a> telah membuat transaksi dengan Anda di Syawalrekber.com</p>
-  <p style="width:95%;padding:0 0 2rem 1rem">Harap tinjau persyaratannya dan segera setujui transaksinya.</p>
-  <div style="text-align:center;">
-    <a href="${process.env.CLIENT_URL}/transaksi/${shortUUID}" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">Lihat Dan Setujui</a>
-  </div>
-</div>
+    sendMail(emailDetail,'Persetujuan Transaksi',`<div style="font-family: Arial, Helvetica, sans-serif;">
+        <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+        <p style="padding:4rem 1rem 2rem 1rem;">Hi <a style="color:blue;">${emailDetail}</a>,</p>
+        <p style="width:80%;padding:0 0 1rem 1rem"><a style="color:blue;">${email}</a> telah membuat transaksi dengan Anda di SyawalRekber.com</p>
+        <h4 style="padding:0 1rem;">Detail Transaksi:</h4>
+        <div style="padding: 0 2rem;">
+            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:1rem 0 1rem 0;border-top: 1px solid  #d9d9d9;">Transksi ID: ${shortUUID}</p>
+            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Barang/Jasa: ${product}</p>
+            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding: 0 0 1rem 0;">Harga: ${formatrupiah(amount)}</p>
+            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Bergaransi: ${beridentitas}</p>
+            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding: 0 0 1rem 0;">Biaya Admin: ${formatrupiah(adminFee)}</p>
+            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding: 0 0 1rem 0;">Biaya Admin di bayar: ${biayaAdmin}</p>
+        </div>
+        <p style="width:95%;padding:1rem 0 2rem 1rem">Harap tinjau persyaratannya dan segera setujui transaksinya.</p>
+        <div style="text-align:center;">
+          <a href="${process.env.CLIENT_URL}/transaksi/${shortUUID}" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">Lihat Dan Setujui</a>
+        </div>
+      </div>
 `)
     return res.json({ idTrx: shortUUID });
   } catch (error) {
@@ -198,12 +214,41 @@ exports.updateState = async (req,res) => {
 
 exports.change = async (req,res) => {
   const {id} =req.params;
-  const {beridentitas,admin_paid_by, amount, alasan,field,fields,admin_fee,email} = req.body;
+  const {beridentitas,admin_paid_by, amount, alasan,field,fields,admin_fee,email,email1,changer} = req.body;
   const query = `UPDATE transactions SET amount = ?, beridentitas = ?, admin_paid_by = ?, ${field} = ?, ${fields} = ?, admin_fee = ? WHERE transaction_id
  = ?`;
   try {
     await db.execute(query,[amount,beridentitas,admin_paid_by,false,true,admin_fee,id])
-    console.log(email);
+    console.log(email,email1,changer);
+    sendMail(email,`Perubahan Detail Transaksi ID: ${id}`,`<div style="font-family: Arial, Helvetica, sans-serif;">
+        <h1 style="background-color: #01426a;
+        text-align: center;padding: 1rem 0;color: white;";>SyawalRekber.com</h1>
+        <div style="padding: 1.5rem 1rem;">
+            <p>Hai <a style='color: blue;'>${email}</a>,</p>
+            <p>Kami ingin menginformasikan bahwa transaksi Anda dengan ID Transaksi <span style="font-weight: 600;">${id}</span> telah di ubah oleh <a style="color: blue;">${email1}</a>[${changer}].</p>
+            <h4>Detail Transaksi:</h4>
+            <div style="padding: 0 1rem;">
+                <div style="display: flex;justify-content: space-between;border-bottom: 1px solid #d9d9d9;">
+                    <p style="font-weight: 600;margin:0;">Harga: ${formatrupiah(amount)}<p>
+                </div>
+                <div style="display: flex;justify-content: space-between;border-bottom: 1px solid #d9d9d9;">
+                    <p style="font-weight: 600;" >Pembayar biaya Admin: ${admin_paid_by}</p>
+                </div>
+                <div style="display: flex;justify-content: space-between;border-bottom: 1px solid #d9d9d9;">
+                    <p style="font-weight: 600;">Biaya Admin: ${formatrupiah(admin_fee)}</p>
+                </div>
+                <div style="display: flex;justify-content: space-between;">
+                    <p style="font-weight: 600;">Bergaransi: ${beridentitas}</p>
+                </div>
+            </div>
+            <h4>Dengan Alasan:</h4>
+            <div style="border: 1px solid #d9d9d9;padding: 1rem; border-radius: 5px;margin: 0 1rem;">${alasan}</div>
+            <p style="padding-top: 1rem;">Silahkan periksa detail terbaru di akun anda, dan setujui transaksinya</p>
+            <div style="text-align: center;padding-top: 2rem;">
+            <a href="${process.env.CLIENT_URL}/transaksi/${id}" style="text-decoration: none;background-color: #3cb95d;border-radius: 5px; padding: 1rem 1.5rem; font-weight: 600;color: white;">Lihat dan Setujui</a>
+        </div>
+        </div>
+    </div>`)
     return res.status(200).send('succes change data')
   } catch (error) {
     console.log('Error:',error)

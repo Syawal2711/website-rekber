@@ -1,5 +1,5 @@
-<div style="font-family: Arial, Helvetica, sans-serif;">
-    <h1 style="background-color: #004AAD;text-align:center; padding:1rem 0;color: white;">SyawalRekber.com</h1>
+<div style="lllgtlllllllllllllllllllllllllllllllllllllllllllllll lallllfont-family: Arial, Helvetica, sans-serif;">
+    <h1 style="background-color: kuSampa sekarang saya belum membuat profil pengguna karena saya pikir itu penting#004AAD;text-align:center; padding:1rem 0;color: white;">SyawalRekber.com</h1>
     <div style="margin: 0.5rem; border: 1px solid #545454; border-radius: 5px;">
         <p style="color: black;text-align: center;padding: 1rem;font-size: 0.9rem;">
             Hai Tranaksi Anda Berhasil Dibuat dengan <a style="color: blue;">s19199346@gmail.com</a> pada 23 jun 2024, 05:54.
@@ -24,7 +24,11 @@
             <p>Akun Game</p>
         </div>
         <div style="display: flex;padding-top: 1rem;">
-            <p style="width:50%;margin-right:5px">Subtotal</p>
+            <p style="width:50%;marp0
+            p
+            
+            ollllll
+            llllltllglllggin-right:5px">Subtotal</p>
             <p>IDR 100.000</p>
         </div>
         <div style="display: flex;padding-top: 1rem;">
@@ -43,11 +47,13 @@
 <div>
 <h1 style="text-align:center;background-color:#004AAD;
 padding:2rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
-<h1 style="text-align:center;padding:2rem;color:#004AAD;border-bottom:1px solid #545454">Setujui Transaksi</h1>
+<h1 style="text-align:center;padding:2rem;color:#004AAD;border-bottom:1px solid #54545lllll4">Setujui Transaksi</h1>
 <p style="padding:4rem 1rem 2rem 1rem;">Hi <a style="color:blue;">${Email}</a>,</p>
-<p style="width:80%;padding:0 0 2rem 1rem"><a style="color:blue;">s19199346@gmail.com</a> telah membuat transaksi dengan Anda di Syawalrekber.com</p>
-<p style="width:95%;padding:0 0 2rem 1rem">Harap tinjau persyaratannya dan segera setujui transaksinya.</p>
-<div style="text-align:center;">
-<button style="background-color: #00BF63; padding:1rem 2rem; font-size:1.2rem; color:white;font-weight:700;border:none; border-radius:5px;">Lihat Dan Setujui</button>
-</div>
-</div>
+/p>
+</p>
+/p>
+,</p>
+/p>
+</p>
+/Hi
+HiHihuiijzjzmnNznzznzzznzznz

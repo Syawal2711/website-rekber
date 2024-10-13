@@ -24,6 +24,7 @@ const RoomTrx = () => {
 
 
   const {transaksiId} = useParams();
+  console.log(transaksiId)
   const navigate = useNavigate();
   const [transaksi,setTransaksi] = useState(null);
   const [status,setStatus] = useState(null)
@@ -44,8 +45,11 @@ const RoomTrx = () => {
     identitas:'Ya',
     alasan:''
   })
-  const [id,setId] = useState('')
 
+  console.log(transaksi);
+  console.log(changeData)
+
+  const [id,setId] = useState('')
 
   useEffect(() => {
     if(transaksi && transaksi.step === 0) {
@@ -190,8 +194,22 @@ useEffect(() => {
     window.location.href = `https://wa.me/6287831531101?text=Identitas+saya+sebagai+penjual+pada+transaksi+dengan+id+*${transaksi.transaction_id}*`
   
   }
-  const handleSubmit = async(field,fields) => {
-    const mail = field === 'sellerAgreed' ? transaksi.seller_email : transaksi.buyer_email;
+  const handleSubmit = async(field,fields,fieldss) => {
+    let email1,email2
+    if ((parseFloat(transaksi.amount) === changeData.amount) && 
+    (transaksi.admin_paid_by === changeData.adminFee) && 
+    (transaksi.beridentitas === changeData.identitas)) {
+     alert('Anda tidak melakukan perubahan apapun pada transksi Anda')
+    return
+    }
+
+    if (field === 'sellerAgreed') {
+      email2 = transaksi.buyer_email;
+      email1 = transaksi.seller_email;
+    } else {
+      email2 = transaksi.seller_email;
+      email1 = transaksi.buyer_email;
+    }
     try {
       await axios.patch(`/auth/change/${transaksiId}`, {
         beridentitas : changeData.identitas,
@@ -201,7 +219,9 @@ useEffect(() => {
         field,
         fields,
         admin_fee: changeData.admin_fee,
-        email: mail
+        email: email1,
+        email1:email2,
+        changer:fieldss
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -274,11 +294,11 @@ useEffect(() => {
   };
 
   const changeBuyer = () => {
-    handleSubmit('sellerAgreed','buyerAgreed')
+    handleSubmit('sellerAgreed','buyerAgreed','Pembeli')
   }
 
   const changeSeller = () => {
-    handleSubmit('buyerAgreed','sellerAgreed')
+    handleSubmit('buyerAgreed','sellerAgreed','Penjual')
   }
 
   const style = {
@@ -333,7 +353,7 @@ useEffect(() => {
       {steps === 2 && (<div>Transaksi</div>)}
       {steps === 3 && (<div>Pencairan</div>)}
       {steps === 4 && (<div>Transaksi Selesai</div>)}
-      {transaksi.status ==='Cancelled' && (<div>Transaksi Batal</div>)}
+      {steps === 5 && (<div>Transaksi Batal</div>)}
       </h1>
       <p>ID:{transaksi.transaction_id}</p>
       </div>
@@ -389,7 +409,7 @@ useEffect(() => {
     {steps === 4 && (
       <p>Terimah kasih telah menggunakan layanan rekber kami</p>
     )}
-    {transaksi.status ==='Cancelled' && (<div>Transaksi Anda Di Batalkan</div>)}
+    {steps === 5 && (<div>Transaksi Anda Di Batalkan</div>)}
     </div>
     <div className='proses'>
       {steps === 0 && (
@@ -658,7 +678,7 @@ useEffect(() => {
         <p>Transaksi Anda telah selesai! Terima kasih telah menggunakan layanan rekber kami. Kami berharap pengalaman ini memuaskan untuk Anda.</p>
         </>
       )}
-      { transaksi.status ==='Cancelled' && (
+      { steps ===5 && (
         <>
         <h4>Dibatalkan</h4>
         <p>Transaksi Anda telah dibatalkan. Jika Anda memiliki pertanyaan atau memerlukan bantuan lebih lanjut, jangan ragu untuk menghubungi kami.</p>
@@ -715,6 +735,20 @@ useEffect(() => {
         <AccordionDetails>
           <Typography style={{color:'#545454'}}>
           Proses transaksi berlangsung hingga pembeli mengkonfirmasi terima barang/jasa.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+        <p style={{color:'#545454'}}>Bagaimana jika pembeli tidak ingin mengkonfirmasi terima barang/jasa ? </p>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography style={{color:'#545454'}}>
+          Jika Pembeli tidak ingin mengonfirmasi penerimaan barang/jasa dari Anda, silakan hubungi kami dan berikan bukti bahwa Pembeli telah benar-benar menerima barang/jasa tersebut. Setelah itu, kami akan meneruskan pembayaran ke alamat email Anda.
           </Typography>
         </AccordionDetails>
       </Accordion>

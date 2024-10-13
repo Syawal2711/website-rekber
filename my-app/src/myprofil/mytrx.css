@@ -1,8 +1,4 @@
 
-body,html {
-    height: 100%;
-}
-
 .mytrx th{
     padding:0.5rem;
 }
@@ -17,9 +13,6 @@ table,td,th {
 td {
     color: black;
 }
-
-
-
 
 
 table{
@@ -37,7 +30,7 @@ table tbody tr:nth-child(even) {
 }
 
 #transaksi-saya #footer {
-    padding-bottom: 1rem;
+    padding-bottom:0;
 }
 
 #transaksi-saya .footer {
@@ -63,6 +56,7 @@ table tbody tr:nth-child(even) {
 .lol {
     display: none;
 }
+
 
 @media screen and (max-width:650px) {
     table {

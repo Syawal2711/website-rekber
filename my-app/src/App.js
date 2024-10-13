@@ -11,6 +11,9 @@ import Instructions from './agreed/Instructions' // Pastikan path sesuai dengan 
 import PrivacyPolice from './agreed/PrivacyPolice';
 import MyTransaksi from './myprofil/mytrx'
 import Aktivate from './myprofil/Aktivate';
+import Profil from './myprofil/Profil';
+import ForgotPass from './auth/forgotPass';
+import EditPass from './auth/EditPass';
 
 function App() {
   return (
@@ -19,6 +22,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Parent />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/profil/password' element={<EditPass/>}/>
           <Route path='/detail' element={
             <PrivateRoute>
               <TransactionDetail/>
@@ -29,9 +33,11 @@ function App() {
               <Transaksi/>
             </PrivateRoute>
           }/>
-          <Route path='/activate/:token' element={Aktivate}/>
+          <Route path='profil' element={<Profil/>}/>
+          <Route path='/activate/:token' element={<Aktivate/>}/>
           <Route path='/transaksisaya' element={<MyTransaksi/>}/>
           <Route path='/register' element={<Register/>}/>
+          <Route path='/forgot/password' element={<ForgotPass/>}/>
           <Route path='*' element={<Navigate to='/'/>}/>
           <Route path='/Intructions' element={<Instructions/>}/>
           <Route path='/privacypolice' element={<PrivacyPolice/>}/>
