@@ -6,23 +6,72 @@
     <title>Document</title>
 </head>
 <body>
-    <div style="font-family: Arial, Helvetica, sans-serif;">
-        <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
-        <p style="padding:4rem 1rem 2rem 1rem;">Hi <a style="color:blue;">${emailDetail}</a>,</p>
-        <p style="width:80%;padding:0 0 1rem 1rem"><a style="color:blue;">${email}</a> telah membuat transaksi dengan Anda di SyawalRekber.com</p>
-        <h4 style="padding:0 1rem;">Detail Transaksi:</h4>
-        <div style="padding: 0 2rem;">
-            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:1rem 0 1rem 0;border-top: 1px solid  #d9d9d9;">Transksi ID: 2309393</p>
-            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Barang/Jasa: akun game</p>
-            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding: 0 0 1rem 0;">Harga: Rp 10.000</p>
-            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Bergaransi: Ya</p>
-            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding: 0 0 1rem 0;">Biaya Admin: Rp 10.000</p>
-            <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding: 0 0 1rem 0;">Biaya Admin di bayar: Penjual</p>
-        </div>
-        <p style="width:95%;padding:1rem 0 2rem 1rem">Harap tinjau persyaratannya dan segera setujui transaksinya.</p>
-        <div style="text-align:center;">
-          <a href="${process.env.CLIENT_URL}/transaksi/${shortUUID}" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">Lihat Dan Setujui</a>
-        </div>
-      </div>
+  <div style="font-family: Arial, Helvetica, sans-serif;">
+    <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+    <p style="padding:4rem 1rem 2rem 1rem;">Kepada Yth</p>
+    <p style="padding:0  1rem">Kami ingin memberitahukan bahwa Pembeli dengan alamat email <a style="color:blue;">s19199346@gmail.com</a> telah berhasil melakukan pembayaran untuk transaksi dengan ID:<span style="font-weight: 600;">043940</span> di Syawal Rekber.com dengan nominal <span style="font-weight: 600;">Rp 300.000</span>.</p>
+    <p style="padding: 0 1rem;">Oleh karena itu, kami mohon agar Anda segera mengirimkan 2 Foto identitas diri Anda sesuai dengan persyaratan kami agar proses transaksi Anda dapat dilanjutkan.</p>
+    <h4 style="padding:0 1rem;">Identitas yang perlu anda kirimkan:</h4>
+    <div style="padding: 0 2rem;">
+        <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:1rem 0 1rem 0;border-top: 1px solid  #d9d9d9;">Foto KTP/SIM/KK/DLL</p>
+        <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Foto selfie dengan KTP/SIM/KK/DLL</p>
+        <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Tulis Nama Anda Dan Nama SyawalRekber.com pada selembar kertas dan foto selfie sambil memegang kertas tersebut</p>
+    </div>
+    <p style="width:95%;padding:1rem;">Pastikan semua dokumen yang Anda kirimkan jelas dan valid. Setelah identitas Anda berhasil diverifikasi, Anda bisa melanjutkan proses transaksi anda dengan pembeli</p>
+    <div style="text-align:center;">
+      <a href="https://wa.me/6287831531101?text=Identitas+saya+sebagai+penjual+pada+transaksi+dengan+id+*${transaksi.transaction_id}*" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">kirim Identitas</a>
+    </div>
+    <p style="width:95%;padding:1rem 1rem 0 1rem;">Jika ada pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim support kami.</p>
+    <p style="padding: 1rem 1rem 0 1rem;">Terimah kasih!</p>
+    <p style="padding: 0 1rem;">Tim SyawalRekber.com</p>
+  </div>
+  
 </body>
 </html>
+
+<div style="font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <p style="padding:4rem 1rem 2rem 1rem;">Kepada Yth</p>
+  <p style="padding:0  1rem">Kami ingin menginformasikan bahwa pembayaran Anda untuk transaksi dengan ID:<span style="font-weight:600 ;">433403</span> dengan nominal <span style="font-weight: 600;">Rp 500.000</span> telah kami terima. Dana saat ini sudah diamankan oleh SyawalRekber dan akan diteruskan kepada penjual setelah anda mengkonfrimasi terima barang/jasa dari penjual</p>
+  <p style="width:95%;padding:1rem 1rem 0 1rem;">Jika ada pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim support kami.</p>
+  <p style="padding: 1rem 1rem 0 1rem;">Terimah kasih!</p>
+  <p style="padding: 0 1rem;">Tim SyawalRekber.com</p>
+</div>
+
+
+<div style="font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <p style="padding:4rem 1rem 2rem 1rem;">Kepada Yth</p>
+  <p style="padding:0  1rem">Kami ingin memberitahukan bahwa Pembeli dengan alamat email <a style="color:blue;">s19199346@gmail.com</a> telah berhasil melakukan pembayaran untuk transaksi dengan ID:<span style="font-weight: 600;">043940</span> di Syawal Rekber.com dengan nominal <span style="font-weight: 600;">Rp 300.000</span>.</p>
+  <p style="padding: 0 1rem;">Silakan lakukan proses transaksi anda kepada pembeli tersebut. Dana akan kami teruskan kepada Anda setelah pembeli mengkonfrimasi terima barang/jasa dari Anda</p>
+  <p style="width:95%;padding:1rem 1rem 0 1rem;">Jika ada pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim support kami.</p>
+  <p style="padding: 1rem 1rem 0 1rem;">Terimah kasih!</p>
+  <p style="padding: 0 1rem;">Tim SyawalRekber.com</p>
+</div>
+
+
+<div style="font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <h2 style="text-align: center;">Mencoba Masuk</h2>
+  <div style="padding: 0 1rem;">
+    <p style="padding-bottom: 2rem;">Hai,</p>
+    <p>Perangkat baru mencoba masuk mengakses akun anda. Anda menerima email ini untuk memastikan bahwa itu memang Anda.Jika memang Anda, Silahkan klik tautan di bawah ini:</p>
+  <div style="text-align: center;">
+    <a href="/" style="background-color: #00BF63; padding:0.6rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; border: none;">Itu Saya</a>
+  </div>
+  <p>Tidak yakin  atau ingin berhati-hati?</p>
+  <p>Setel ulang kata sandi Anda  <a href="/">disini</a> untuk mengamankan akun anda</p>
+  <p style="padding-top: 2rem;">Terimah kasih!</p>
+  <p>Tim SyawalRekber.com</p>
+  </div>
+</div>
+
+
+
+<div style="font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <div style="padding: 1rem;">
+  <p>Hai <span style="color:blue;">s19199346@gmail.com</span>, Kami ingin memberitahukan bahwa <span style="color: blue;">sabrijusmin5@gmail.com</span>(Pembeli), Telah berhasil melakukan pembayaran untuk transaksi dengan ID <span style="font-weight: 600;">023303</span> di SyawalRekber.com</p>
+  
+</div>
+</div>

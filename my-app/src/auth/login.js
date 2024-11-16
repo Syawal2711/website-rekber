@@ -13,7 +13,10 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const captchaRef = useRef(null);
   const [token, setToken] = useState('');
+  
 
+  const detect = localStorage.getItem('detectDevice')
+  console.log(detect)
   const navigate = useNavigate();
 
 
@@ -37,7 +40,6 @@ const Login = () => {
             window.turnstile.render(captchaContainer, {
               sitekey: process.env.REACT_APP_SITE_KEY,
               callback: (response) => {
-                console.log('CAPTCHA response:', response); // Debugging line
                 setToken(response); // Store the response token
               },
             });
@@ -69,16 +71,23 @@ const Login = () => {
       const captchaResponse = await axios.post('/auth/api/verify-captcha', { token });
       if (captchaResponse.data.success) {
         // CAPTCHA valid, lanjutkan dengan login
-        const response = await axios.post('/auth/login', { email, password });
+        const response = await axios.post('/auth/login', { email, password,detect });
         const { accessToken } = response.data;
         localStorage.setItem('accessToken', accessToken);
-        console.log('Access Token:', accessToken); // Debugging line
         navigate('/detail');
       } else {
         setErrorMsg('CAPTCHA tidak valid');
       }
     } catch (error) {
-      console.error('Login error:', error); // Debugging line
+      console.log(error)
+      console.error('Login error:', error); 
+      if (error.response.status === 405) {
+        localStorage.setItem('detectDevice',error.response.data.newDevice)
+        setErrorMsg(error.response.data.message)
+        return
+      }
+
+       
       if (error.response && error.response.data) {
         setErrorMsg(error.response.data.message);
       } else {

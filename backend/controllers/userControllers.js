@@ -6,7 +6,8 @@ require('dotenv').config()
 const db = require('../config/db')
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
-const axios = require('axios')
+const axios = require('axios');
+const { format } = require('mysql2');
 
 
 
@@ -51,18 +52,38 @@ function sendMail(to,sub,msg) {
   })
 }
 
+const generateEmailTemplate = (userId, deviceKey) => `
+  <div style="font-family: Arial, Helvetica, sans-serif;">
+    <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+    <h2 style="text-align: center;">Mencoba Masuk</h2>
+    <div style="padding: 0 1rem;">
+      <p style="padding-bottom: 1rem;">Hai,</p>
+      <p style="padding-bottom:2rem;"> Perangkat baru mencoba mengakses akun Anda. Anda menerima email ini untuk memastikan bahwa itu memang Anda. Jika memang Anda, silakan klik tautan di bawah ini:</p>
+      <div style="text-align:center;padding:2rem 0">
+        <a href="${process.env.CLIENT_URL}/trylog/${userId}/${deviceKey}" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">Itu Saya</a>
+      </div>
+      <p style="padding-top:2rem;">Tidak yakin atau ingin berhati-hati?</p>
+      <p>Setel ulang kata sandi Anda <a href="/">di sini</a> untuk mengamankan akun Anda.</p>
+      <p style="padding-top: 2rem;">Terima kasih!</p>
+      <p>Tim SyawalRekber.com</p>
+    </div>
+  </div>
+`;
+
 exports.register = async (req, res) => {
     const { email, password } = req.body;
-  
+   
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
       try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const activationToken = uuidv4();
+      const detectDevice =  uuidv4()
+
         await db.execute(
-          'INSERT INTO users (email, password,activationToken,isActive) VALUES (?,?,?,?)',
-          [email, hashedPassword,activationToken,false]);
+          'INSERT INTO users (email, password,activationToken,isActive,device) VALUES (?,?,?,?,?)',
+          [email, hashedPassword,activationToken,false,detectDevice]);
         sendMail(email,'Aktifkan Akun Anda',`<div style="font-family: Arial, Helvetica, sans-serif;">
         <h1 style="background-color: #01426a;text-align:center; padding:1rem 0;color: white;">SyawalRekber.com</h1>
         <div style="margin: 0.5rem; border: 1px solid #545454; border-radius: 5px;padding:1rem 2rem;">
@@ -73,7 +94,8 @@ exports.register = async (req, res) => {
             </div>
         </div>
     </div>`)
-        res.status(201).json({ message: 'Berhasil Membuat Akun Anda,cek email anda untuk mengaktifkan akun Anda' });
+        res.status(201).json({ detectDevice });
+       
       } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
           res.status(409).json({ message: 'Email Sudah Terdaftar' });
@@ -95,30 +117,113 @@ exports.activateAccount = async (req,res) => {
     res.status(500).send('Server Error')
   }
 }
-exports.login = async (req, res) => {
-    const { email, password } = req.body;
-  
-    try {
-      const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
-      if (rows.length === 0 || !email) {
-        return res.status(401).json({ message: 'Akun tidak ditemukan' });
+exports.ipchange11 = async (req, res) => {
+  const { email , token } = req.params;
+  console.log(token)
+
+  // Validasi input
+  if (!token || !email) {
+      return res.status(400).send('Token dan email diperlukan');
+  }
+
+  const query = 'UPDATE users SET device = JSON_REPLACE(device, ?, "allowed") WHERE email = ?';
+  try {
+      // Escape token jika ada karakter khusus
+      const jsonPath = `$.\"${token}\"`;
+      const [result] = await db.execute(query, [jsonPath, email]);
+
+      // Cek apakah ada baris yang terpengaruh
+      if (result.affectedRows === 0) {
+          return res.status(404).send('Email tidak ditemukan atau perangkat tidak dapat diperbarui');
       }
-      const user = rows[0];
-      if(!user.isActive) {
-        return res.status(401).json({message:'Akun Anda belum Di Aktifkan'})
-      }
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) {
-        return res.status(401).json({ message: 'Password salah' });
-      }
-  
-      const accessToken = jwt.sign({ userId: user.id, email: user.email }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-      res.json({ accessToken });
-    } catch (error) {
-      console.log(error)
-      res.status(500).json({ message: 'Internal server error' });
+
+      return res.status(200).send('Berhasil Memverifikasi Perangkat');
+  } catch (error) {
+      console.log("Error:", error);
+      return res.status(500).send('Terjadi kesalahan saat memverifikasi perangkat');
+  }
+};
+
+exports.ipchange = async (req, res) => {
+  const { email, token } = req.params;
+  console.log(token);
+
+  // Validasi input
+  if (!token || !email) {
+    return res.status(400).send('Token dan email diperlukan');
+  }
+
+  try {
+    // Ambil data JSON dari kolom device
+    const [rows] = await db.execute('SELECT device FROM users WHERE email = ?', [email]);
+
+    if (rows.length === 0) {
+      return res.status(404).send('Email tidak ditemukan.');
     }
-  };
+
+    let deviceData = JSON.parse(rows[0].device);
+
+    // Cari token yang sesuai
+    let tokenIndex = deviceData.tokens.findIndex(t => t.detect === token);
+
+    if (tokenIndex === -1) {
+      return res.status(404).send('Token tidak ditemukan dalam device data.');
+    }
+
+    // Ubah status token
+    deviceData.tokens[tokenIndex].status = 'allowed';
+
+    // Update kembali data ke kolom device
+    await db.execute('UPDATE users SET device = ? WHERE email = ?', [JSON.stringify(deviceData), email]);
+
+    return res.status(200).send('Berhasil Memverifikasi Perangkat');
+  } catch (error) {
+    console.log("Error:", error);
+    return res.status(500).send('Terjadi kesalahan saat memverifikasi perangkat');
+  }
+};
+
+exports.login = async (req, res) => {
+  const { email, password,detect } = req.body;
+  console.log(detect)
+
+  try {
+    const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+    console.log(rows.device)
+    if (rows.length === 0 || !email) {
+      return res.status(401).json({ message: 'Akun tidak ditemukan' });
+    }
+
+    const user = rows[0];
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: 'Akun Anda belum diaktifkan' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Password salah' });
+    }
+    if(detect !== user.device) {
+      const myDevice = jwt.sign({email:user.email},ACCESS_TOKEN_SECRET,{ expiresIn: '1h' })
+      
+      sendMail(user.email,'Percobaa Login Ke Akun Anda',generateEmailTemplate(user.id,myDevice))
+      return res.status(402).json({message:'Perangkat tidak di percaya, Cek email Anda untuk memverifikasi perangakat ini'})
+    }
+
+    const accessToken = jwt.sign({ userId: user.id, email: user.email }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+    return res.json({ accessToken });
+
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Fungsi untuk membuat template email
+
+
+
 
   exports.transactions = async (req, res) => {
   const { email, peran, product, amount, description, beridentitas, biayaAdmin, adminFee, emailDetail } = req.body;
@@ -256,7 +361,7 @@ exports.change = async (req,res) => {
 }
 
 exports.invoice = async (req,res) => {
-  const {id, amount, email, name} = req.body;
+  const {id, amount, email, emailSeller, name,bergaransi} = req.body;
   try {
     const response = await axios({
       method: 'post',
@@ -268,9 +373,6 @@ exports.invoice = async (req,res) => {
       data: {
         external_id:id,
         amount,
-        customer: {
-          email
-        },
         items: [{
           name,
           quantity:1,
@@ -284,8 +386,16 @@ exports.invoice = async (req,res) => {
     const urlInvoice = response.data.invoice_url
     try {
       await db.execute(`UPDATE transactions SET id_invoice = ?,url_invoice = ?, status = ? WHERE transaction_id = ?`,[idInvoice,urlInvoice,'In Progress',id]);
+      if(bergaransi === 'Tidak') {
+        sendMail(emailSeller,'Pembayaran Diterima Dari Pembeli',emailSellerNo(id,amount,email))
+      }
+      if(bergaransi === 'Ya') {
+        sendMail(emailSeller,'Pembayaran Diterima - Mohon Kirimkan Identitas Anda',emailSellerYes(id,amount,email))
+      }
+      sendMail(email,'Pembayaran Anda Diterima',emailBuyer(id,amount))
       res.status(200).json(urlInvoice)
     } catch (error) {
+      console.log(error)
       res.status(500).json({message:message.error})
     }
    
@@ -294,6 +404,45 @@ exports.invoice = async (req,res) => {
     res.status(500).json({error: error.message})
   }
 }
+
+const emailSellerYes = (id,amount,email) => `<div style="font-family: Arial, Helvetica, sans-serif;">
+    <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+    <p style="padding:4rem 1rem 2rem 1rem;">Kepada Yth</p>
+    <p style="padding:0  1rem">Kami ingin memberitahukan bahwa Pembeli dengan alamat email <a style="color:blue;">${email}</a> telah berhasil melakukan pembayaran untuk transaksi dengan ID:<span style="font-weight: 600;">043940</span> di Syawal Rekber.com dengan nominal <span style="font-weight: 600;">${formatrupiah(amount)}</span>.</p>
+    <p style="padding: 0 1rem;">Oleh karena itu, kami mohon agar Anda segera mengirimkan 2 Foto identitas diri Anda sesuai dengan persyaratan kami agar proses transaksi Anda dapat dilanjutkan.</p>
+    <h4 style="padding:0 1rem;">Identitas yang perlu anda kirimkan:</h4>
+    <div style="padding: 0 2rem;">
+        <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:1rem 0 1rem 0;border-top: 1px solid  #d9d9d9;">Foto KTP/SIM/KK/DLL</p>
+        <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Foto selfie dengan KTP/SIM/KK/DLL</p>
+        <p style="font-weight: 600;border-bottom: 1px solid  #d9d9d9; padding:0 0 1rem 0;">Tulis Nama Anda Dan Nama SyawalRekber.com pada selembar kertas dan foto selfie sambil memegang kertas tersebut</p>
+    </div>
+    <p style="width:95%;padding:1rem;">Pastikan semua dokumen yang Anda kirimkan jelas dan valid. Setelah identitas Anda berhasil diverifikasi, Anda bisa melanjutkan proses transaksi anda dengan pembeli</p>
+    <div style="text-align:center;">
+      <a href="https://wa.me/6287831531101?text=Identitas+saya+sebagai+penjual+pada+transaksi+dengan+id+*${id}*" style="background-color: #00BF63; padding:0.8rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; font-weight:600;">kirim Identitas</a>
+    </div>
+    <p style="width:95%;padding:1rem 1rem 0 1rem;">Jika ada pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim support kami.</p>
+    <p style="padding: 1rem 1rem 0 1rem;">Terimah kasih!</p>
+    <p style="padding: 0 1rem;">Tim SyawalRekber.com</p>
+  </div>`
+
+const emailSellerNo = (id,amount,email) => `<div style="font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <p style="padding:4rem 1rem 2rem 1rem;">Kepada Yth</p>
+  <p style="padding:0  1rem">Kami ingin memberitahukan bahwa Pembeli dengan alamat email <a style="color:blue;">${email}</a> telah berhasil melakukan pembayaran untuk transaksi dengan ID:<span style="font-weight: 600;">${id}</span> di Syawal Rekber.com dengan nominal <span style="font-weight: 600;">${formatrupiah(amount)}</span>.</p>
+  <p style="padding: 0 1rem;">Silakan lakukan proses transaksi anda kepada pembeli tersebut. Dana akan kami teruskan kepada Anda setelah pembeli mengkonfrimasi terima barang/jasa dari Anda</p>
+  <p style="width:95%;padding:1rem 1rem 0 1rem;">Jika ada pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim support kami.</p>
+  <p style="padding: 1rem 1rem 0 1rem;">Terimah kasih!</p>
+  <p style="padding: 0 1rem;">Tim SyawalRekber.com</p>
+</div>`
+
+const emailBuyer = (id,amount) => `<div style="font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+  <p style="padding:4rem 1rem 2rem 1rem;">Kepada Yth</p>
+  <p style="padding:0  1rem">Kami ingin menginformasikan bahwa pembayaran Anda untuk transaksi dengan ID:<span style="font-weight:600 ;">${id}</span> dengan nominal <span style="font-weight: 600;">${formatrupiah(amount)}</span> telah kami terima. Dana saat ini sudah diamankan oleh SyawalRekber dan akan diteruskan kepada penjual setelah anda mengkonfrimasi terima barang/jasa dari penjual</p>
+  <p style="width:95%;padding:1rem 1rem 0 1rem;">Jika ada pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim support kami.</p>
+  <p style="padding: 1rem 1rem 0 1rem;">Terimah kasih!</p>
+  <p style="padding: 0 1rem;">Tim SyawalRekber.com</p>
+</div>`
 exports.payout = async (req,res) => {
   const {external_id,amount,email} = req.body
   try {
@@ -401,13 +550,11 @@ exports.verifyCaptcha = async (req, res) => {
 
 exports.mytrx = async (req,res) => {
   const {email,value} = req.query;
-  console.log(value)
   
   const sql = `SELECT * FROM transactions WHERE buyer_email = ? OR seller_email = ? ORDER BY created_at DESC LIMIT ?`
   
   try {
     const [ response ]= await db.execute(sql,[email,email,value]);
-    console.log(response.length)
     res.status(200).json({msg:response})
   } catch (error) {
     console.log(error)
@@ -426,8 +573,120 @@ exports.allTrx = async (req,res) => {
   }
 }
 
+exports.myChangeProfil = async(req,res) => {
+  const { email } = req.body;
+  const query = 'SELECT  name,noHP FROM users WHERE email = ?'
+  try {
+    const [response]= await db.execute(query,[email])
+    res.status(200).json({message:response[0]})
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message:error})
+  }
+}
+exports.myChangProfil = async (req, res) => {
+  const { email, name, noHp } = req.body;
+
+  // Validasi input
+  if (!email || !name || !noHp) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  const query = 'UPDATE users SET name = ?, noHp = ? WHERE email = ?';
+  try {
+    await db.execute(query, [name, noHp, email]);
+    return res.status(200).json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'An error occurred while updating the profile' });
+  }
+};
 
 
-exports.tes = async(req,res) => {
-  res.send('helllo world')
-}  
+exports.myprofil = async(req,res) => {
+
+  const { email } = req.query
+  const  query = 'SELECT name,noHp FROM users WHERE email = ?'
+  try {
+    const [response] = await db.execute(query,[email])
+    res.status(200).json({message:response[0]})
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+exports.resetPassword = async(req, res) => {
+  const { email } = req.body;
+
+  try {
+  const [results] = await db.execute('SELECT name FROM users WHERE email = ?', [email])
+  if (results.length === 0) {
+    return res.status(404).json({ message: 'Email not found' });
+  }
+  const token = jwt.sign({ email }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      sendMail(email,'Reset Password Request',`<div style="font-family: Arial, Helvetica, sans-serif;">
+    <h1 style="text-align:center;background-color: #01426a; padding:1rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+    <div style="padding: 0 1rem;">
+      <p style="padding-bottom: 1rem;padding-top: 2rem;">Hai Muh Syawal,</p>
+      <p style="padding-bottom: 2rem;">Anda telah meminta untuk mengatur ulang kata sandi Anda di SyawalRekber.com. Klik tombol di bawah ini untuk mengatur ulang kata sandi Anda</p>
+    <div style="text-align: center;">
+      <a href="${process.env.CLIENT_URL}/reset/password/${token}" style="background-color: #00BF63; padding:0.6rem 2rem; font-size:1.2rem; color:white; text-decoration: none; border-radius:5px; border: none;">Reset Password</a>
+    </div>
+    <p style="padding-top: 2rem;">Jangan bagikan kata sandi Anda kepada siapa pun. SyawalRekber.com tidak akan pernah meminta kata sandi Anda melalui email atau telepon.</p>
+    <p style="padding-top: 2rem;">Terimah kasih!</p>
+    <p>Tim SyawalRekber.com</p>
+    </div>
+  </div>`)
+      res.status(200).json({ message: 'Reset password link sent!' });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: 'Database error' });
+  }
+};
+
+
+// 2. Reset Password
+exports.newPassword = async (req, res) => {
+  const { newPassword,email } = req.body;
+
+  try {
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password di database
+    const [results] = await db.execute(
+      'UPDATE users SET password = ? WHERE email = ?',
+      [hashedPassword, email]
+    );
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'Password has been reset successfully!' });
+  } catch (error) {
+    console.error('Invalid or expired token:', error);
+    res.status(400).json({ message: 'Invalid or expired token.' });
+  }
+};
+
+
+
+exports.tes = async (req, res) => {
+  const { id } = req.params;
+  const query = 'SELECT device FROM users WHERE id = ?';
+  try {
+    const [response] = await db.execute(query, [id]);
+    if (response.length > 0) { // Cek jika ada hasil
+      console.log(response[0].device);
+      res.status(200).json({ message: response[0].device });
+    } else {
+      res.status(404).json({ message: 'Device not found' }); // Jika tidak ada hasil
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' }); // Menangani kesalahan
+  }
+};

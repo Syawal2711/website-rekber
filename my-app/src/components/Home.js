@@ -48,7 +48,7 @@ function Home() {
 
     return (
         <div style={{backgroundColor:'#01426a'}}>
-        <div id="home" className="section">
+        <div id="home" className="section" style={{paddingTop:"3.5rem"}}>
             <div className='page home-left'>
                 <h1>Jangan Pernah Membeli Atau Menjual Barang Secara Online Tanpa Menggunakan SyawalRekber.com</h1>
                 <p>Dengan SyawalRekber.com Anda Dapat Membeli Dan Menjual Apapun Dengan Aman</p>

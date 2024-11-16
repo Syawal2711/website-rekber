@@ -9,9 +9,6 @@ app.use(bodyParser.json());
 app.use(express.static('uploads'))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
-
-
-
 app.use('/auth',limit,authRoutes);
 
 const port = 3001;

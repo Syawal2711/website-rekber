@@ -46,9 +46,6 @@ const RoomTrx = () => {
     alasan:''
   })
 
-  console.log(transaksi);
-  console.log(changeData)
-
   const [id,setId] = useState('')
 
   useEffect(() => {
@@ -239,7 +236,10 @@ useEffect(() => {
         id:transaksiId,
         amount: totalPembeli(),
         email:transaksi.buyer_email,
-        name:transaksi.product
+        emailSeller:transaksi.seller_email,
+        name:`Rekber ${transaksi.product}`,
+        bergaransi: transaksi.beridentitas
+
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -343,14 +343,14 @@ useEffect(() => {
   return (
   <div id='transaksi-saya'>
     <Navbar/>
-    <div style={{backgroundColor:'#e84855',alignItems:'center',padding:'0.5rem',fontSize:'1rem',textAlign:'center'}}>
+    <div  className='note' >
       Apabila Anda Butuh Bantuan Dengan Transaksi Anda Silahkan Hubungi Kami !!
     </div>
-    <div className='container-transaksi'>
+    <div className='container-transaksi' style={{marginTop:"10rem"}}>
       <div className='judul'>
       <h1>{steps === 0 && (<div>Persetujuan</div>)}
       {steps === 1 && (<div>Pembayaran</div>)}
-      {steps === 2 && (<div>Transaksi</div>)}
+      {steps === 2 && (<div>Bertransaksi</div>)}
       {steps === 3 && (<div>Pencairan</div>)}
       {steps === 4 && (<div>Transaksi Selesai</div>)}
       {steps === 5 && (<div>Transaksi Batal</div>)}
@@ -380,7 +380,7 @@ useEffect(() => {
       <Step label="Persetujuan" />
       <Step label="Pembayaran" />
       <Step label="Transaksi" />
-      <Step label="Pencairan" />
+      <Step label={steps === 5 ? "Dibatalkan" :"Pencairan"} />
     </Stepper>
     { steps === 0 && (
       <p>Kedua belah pihak harus menyetujui transksi di bawah ini untuk melanjutkan transaksi.</p>
@@ -605,7 +605,7 @@ useEffect(() => {
           <div>
             <h4>Pembayaran</h4>
             {(status === 'PENDING' || status === null) && <p>Silakan lakukan pembayaran ke SyawalRekber.com untuk melanjutkan transaksi Anda dengan mengklik tombol di bawah.</p>}
-            {(status === 'PAID' ||status ===  'SETTLED') && <p>Dana telah diterima. Menunggu pembeli untuk mengirimkan identitasnya kepada admin kami.</p>}
+            {(status === 'PAID' || status ===  'SETTLED') && <p>Dana telah diterima. Menunggu pembeli untuk mengirimkan identitasnya kepada admin kami.</p>}
             <div className='button-payment'>
               {(!transaksi.id_invoice || null) &&  <button onClick={handlePayment} disabled={loading}>{loading ? <div className='spinner'></div>:'Bayar Sekarang'}</button>}
               {transaksi.url_invoice && status === 'PENDING' && <button onClick={handleUrlPay}>Bayar Sekarang</button>}

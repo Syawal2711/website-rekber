@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import './Navbar.css';
+import Hamburger from 'hamburger-react';
+import { IoChevronDown } from "react-icons/io5";
 
 function Navbar() {
-    const [menu, setMenu] = useState(false);
+    const [isOpen, setOpen] = useState(false);
+    const navigate = useNavigate()
     const [prof, setProf] = useState(false);
     const navRef = useRef(null);
-    const menuIconRef = useRef(null);
     const token = localStorage.getItem('accessToken');
-    
+
     let decodedToken = null;
     if (token) {
         try {
@@ -38,7 +39,7 @@ function Navbar() {
     }, []);
 
     const handleMenu = () => {
-        setMenu(prevMenu => !prevMenu);
+        setOpen(prevIsOpen => !prevIsOpen);
     };
 
     const handleProfil = () => {
@@ -46,10 +47,10 @@ function Navbar() {
     };
 
     const handleClickOutside = (e) => {
-        if (navRef.current && !navRef.current.contains(e.target) &&
-            menuIconRef.current && !menuIconRef.current.contains(e.target)) {
+        // Cek apakah klik di luar elemen navRef dan elemen yang aktif
+        if (navRef.current && !navRef.current.contains(e.target)) {
             setProf(false);
-            setMenu(false);
+            setOpen(false);
         }
     };
 
@@ -60,54 +61,60 @@ function Navbar() {
         };
     }, []);
 
-    const handleItemClick = () => {
-        setMenu(false);
-    };
-
     const handleClearToken = () => {
         localStorage.removeItem('accessToken');
         setProf(false);
-        setMenu(false);
+        setOpen(false);
     };
 
     return (
-        <div style={{ backgroundColor: '#01426a', width: '100%' }}>
-            <nav className="navbar">
+        <div className='navbar-container'>
+            <nav className="navbar" ref={navRef}>
                 <div className="title">
-                    <h1>SyawalRekber.com</h1>
+                    <div className={`menu-chev ${isOpen ? 'active' : ''}`}>
+                        <IoChevronDown
+                            size={20} 
+                            onClick={handleMenu} 
+                            style={{display:'flex',alignItems:"center",marginRight:"0.5rem"}}
+                        />
+                    </div>
+                    <Link to='/'>SyawalRekber.com</Link>
                 </div>
-                <div ref={navRef} className={`navbar-nav ${menu ? 'active' : ''}`}>
+                <div className={`navbar-nav ${isOpen ? 'active' : ''}`}>
                     <div className="nav-item">
-                        <Link to="/#home" onClick={handleItemClick}>Home</Link>
+                        <Link to="/#home" onClick={() => setOpen(false)}>Home</Link>
                     </div>
                     <div className="nav-item">
-                        <Link to="/#tutorial" onClick={handleItemClick}>Tata Cara</Link>
+                        <Link to="/#tutorial" onClick={() => setOpen(false)}>Tata Cara</Link>
                     </div>
                     <div className="nav-item">
-                        <Link to="/#list-fee" onClick={handleItemClick}>Biaya Transaksi</Link>
+                        <Link to="/#list-fee" onClick={() => setOpen(false)}>Biaya Transaksi</Link>
                     </div>
                     <div className="nav-item">
-                        <Link to="/#faq" onClick={handleItemClick}>FAQ</Link>
+                        <Link to="/#faq" onClick={() => setOpen(false)}>FAQ</Link>
                     </div>
                     <div className="nav-item">
-                        <Link to="/#footer" onClick={handleItemClick}>Contact</Link>
+                        <Link to="/#footer" onClick={() => setOpen(false)}>Contact</Link>
                     </div>
                     {!token ? (
                         <div className='line-navbar'>
                             <div style={{ paddingTop: '15px' }} className="nav-item menu-auth">
-                                <Link to='/register'>Buat Akun</Link>
+                                <Link to='/login'>Login</Link>
                             </div>
                             <div className="nav-item menu-auth">
-                                <Link to='/login'>Login</Link>
+                            <Link to='/register'>Buat Akun</Link>
                             </div>
                         </div>
                     ) : (
                         <div className='line-navbar'>
                             <div style={{ paddingTop: '15px' }} className="nav-item menu-auth">
-                                <Link to='/detail'>Buat Transaksi</Link>
+                               <Link to='/profil'>Profil Saya</Link>
                             </div>
                             <div className="nav-item menu-auth">
-                                <Link to='/transaksisaya'>Transaksi Saya</Link>
+                            <Link to='/transaksisaya'>Transaksi Saya</Link>
+                            </div>
+                            <div className="nav-item menu-auth">
+                            <Link to='/detail'>Buat Transaksi</Link>
                             </div>
                             <div className="nav-item menu-auth">
                                 <Link to='/' onClick={handleClearToken}>Log out</Link>
@@ -141,7 +148,7 @@ function Navbar() {
                                     borderRadius: '5px',
                                     textDecoration: 'none'
                                 }}>Buat Trx</Link>
-                                <div ref={menuIconRef} onClick={handleProfil} style={{
+                                <div onClick={handleProfil} style={{
                                     borderRadius: '50%',
                                     backgroundColor: '#004AAD',
                                     fontSize: 'large',
@@ -155,16 +162,18 @@ function Navbar() {
                                     lineHeight: '2rem',
                                     cursor: 'pointer'
                                 }}>
-                                    {email ? email.charAt(0).toUpperCase() : ''}
+                                    {email ? email.charAt(0).toUpperCase() : navigate('/')}
                                 </div>
                             </div>
                         )}
                     </div>
-                    <div className='menu'>
-                        <MenuIcon ref={menuIconRef} onClick={handleMenu} style={{ alignItems: 'center', width: "2.5rem", height: 'auto' }} />
+                    <div className="menu">
+                        <Hamburger toggled={isOpen} toggle={setOpen} onClick={handleMenu} size={25}
+                            style={{ alignItems: 'center'}} 
+                        />
                     </div>
                     {prof && (
-                        <div ref={navRef} className={`myprofil active`}>
+                        <div className={`myprofil active`}>
                             <div style={{
                                 display: 'flex',
                                 gap: "1rem",
@@ -184,7 +193,7 @@ function Navbar() {
                                     fontSize: '1.5rem',
                                     fontWeight: '700'
                                 }}>
-                                    {email ? email.charAt(0).toUpperCase() : ''}
+                                    {email ? email.charAt(0).toUpperCase() : navigate('/')}
                                 </div>
                                 <p style={{
                                     fontSize: '0.8rem',
@@ -194,7 +203,7 @@ function Navbar() {
                                 }}>{email}</p>
                             </div>
                             <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
-                                <Link to='/detail'>Buat Transaksi</Link>
+                                <Link to='/profil'>Profil Saya</Link>
                             </div>
                             <div className='log' style={{ borderBottom: "1px solid #d9d9d9" }}>
                                 <Link to='/transaksisaya'>Transaksi Saya</Link>

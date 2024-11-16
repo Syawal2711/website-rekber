@@ -1,20 +1,38 @@
 .navbar {
     display: flex;
     justify-content: space-between;
-    width:65rem;
-    max-width: 100%;
+    max-width: 65rem;
     padding:0.5rem 1rem;
     margin:0 auto;
-    position: relative;
+    z-index: 999;
+    
     
 }
+
+.navbar-container {
+    background-color: rgba(1, 66, 106, 0.9);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid white;
+    z-index: 99999;
+  }
+  
 
 .nav-item a {
     text-decoration: none;
 }
 
-.navbar h1 {
+
+.navbar .title {
+    display: flex;
     font-size: 2rem;
+    text-decoration: none;
+    font-weight: 700;
+    font-style: italic;
+    align-items: center;
 }
 .navbar-nav{
     display: flex;
@@ -30,6 +48,10 @@
     display: none;
 }
 
+.menu-chev {
+ display: none;
+}
+
 .menu-auth{
     display: none;
 }
@@ -37,17 +59,17 @@
 .myprofil {
     display: none;
     position: absolute;
-    top:4rem;
+    top:100%;
+    right: -100%;
     background-color: white;
     width: 17rem;
-    right: 0;
     border-radius: 5px;
     padding: 1rem;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.50);
 }
 .myprofil.active {
-    right: 0;
     display: block;
+    right: 0;
 }
 
 .log {
@@ -81,14 +103,37 @@
         width: none;
     }
 }
-@media screen and (min-width:768px) and (max-width:919px) {
-    .navbar-nav {
-        display: none;
+@media screen and (min-width:600px) and (max-width:919px) {
+    .menu-chev {
+        display: inline-block;
+        transform-origin: center;
+        
     }
-}
-@media  screen and (min-width:600px) and (max-width:767px) {
+    .menu-chev.active svg{
+        rotate: 180deg;
+    }
     .navbar-nav {
-        display:none
+        position: absolute;
+        top: -100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100vw;
+        background-color: rgba(255, 255, 255, 0.9);
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        padding: 1rem;
+        gap: 1.5rem;
+        z-index: 99; 
+    }
+     .navbar-nav.active {
+        top: 100%;
+         /* Pindah kembali ke posisi yang terlihat */
+     }
+    .nav-item a{
+        color: #545454;
+        font-weight:300;
+        text-decoration: none;
     }
 }
 
@@ -96,23 +141,29 @@
     .menu {
         display: inline-block;
     }
-
+   
     .navbar-nav {
         position: absolute;
-        top: 3rem;
-        right: 100%;
-        width: 50%;
+        top: 100%;
+        right: -100%; /* Tetap di posisi ini */ /* Sembunyikan di luar layar */
+        width: 20rem;
+        height: 100vh; /* Atur lebar sesuai kebutuhan */
+        display: flex; 
         flex-direction: column;
-        align-items: start;
+        align-items: flex-start; 
         padding: 2rem;
-        gap:10px;
+        gap: 10px;
         background-color: white;
-        z-index: 999;
-    }
+        z-index: 999; 
+        transition: 0.5s;
+  }
+    
     .navbar-nav.active {
-        right:0;
+        right: 0;
+         /* Pindah kembali ke posisi yang terlihat */
         box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.50);
     }
+
 
     .menu-auth {
         display: block;
@@ -132,17 +183,4 @@
     .line-navbar {
         display: block;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

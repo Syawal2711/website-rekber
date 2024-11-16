@@ -10,7 +10,7 @@ import './Method1.css'
 const Method1 = () => {
   return (
     <>
-    <div id='tutorial' className='img-container'>
+    <div  className='img-container'>
         <div className='img-image'>
             <img src={img1} alt='img1'/>
             <p>1. Penjual Dan Pembeli Menyetujui Transaksi</p>

@@ -9,6 +9,7 @@ html, body {
   margin: 0 ;
   scroll-behavior: smooth;
   box-sizing: border-box;
+  text-decoration: none;
   font-family: Rubik,sans-serif
 }
 

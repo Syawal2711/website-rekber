@@ -1,7 +1,9 @@
 .sliders {
+    overflow-x: hidden;
     width: 60rem;
     max-width:100%;
     padding:1rem;
+    border-top: 1px solid #d4d4d4;
     margin: 1rem auto;
 }
 
@@ -10,8 +12,6 @@
     text-align: center;
     padding-top: 3rem;
     padding-bottom: 1rem;
-    border-top: 1px solid #545454;
-    
 }
 
 .parag p {

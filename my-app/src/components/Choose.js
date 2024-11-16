@@ -1,37 +1,22 @@
 import React from 'react'
 import img from '../assets/images/7.png';
 import './Choose.css'
-import { motion } from 'framer-motion';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+AOS.init();
 
 function Choose() {
     return (
-        <div className='choose' style={{width:'60rem',maxWidth:'100%',padding:'1rem',margin:'2rem auto',paddingTop:'5rem'}}>
-            <motion.h1
-            initial={{
-                opacity:0,
-                x:50
-              }}
-              whileInView={{
-                opacity:1,
-                x:0
-              }}
-              transition={{duration:'0.8'}}
-              viewport={{ once: true }}
-            style={{color:'black',padding:'0 1rem'}}>Kenapa Memilih Rekber Syawalrekber.com</motion.h1>
+        <div className='choose' style={{width:'60rem',maxWidth:'100%',padding:'1rem',margin:'2rem auto',paddingTop:'5rem',overflowX: 'hidden'}}>
+            <h1 data-aos="fade-left"
+        data-aos-duration="1000"
+        data-aos-offset="300" style={{color:'black',padding:'0 1rem'}}>Kenapa Memilih Rekber Syawalrekber.com</h1>
             <div style={{display:'flex',flexWrap:'wrap',padding:'0 2rem'}}>
                 <div style={{flex:'0 0 40%',justifyContent:'center',alignItems:'center'}}>
-                <motion.img
-                initial={{
-                    opacity:0,
-                    x:-50
-                  }}
-                  whileInView={{
-                    opacity:1,
-                    x:0
-                  }}
-                  transition={{duration:'0.8'}}
-                  viewport={{ once: true }}
-                   src={img} alt='img' style={{width:'18rem',height:'auto'}}/>
+                <img data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="200"
+        data-aos-offset="300" src={img} alt='img' style={{width:'18rem',height:'auto'}}/>
                 </div>
                 <div className='poin'>
                     <p>1.Transaksi Aman: Menjamin keamanan dengan sistem rekening bersama yang mencegah penipuan dan memastikan kewajiban terpenuhi.</p>

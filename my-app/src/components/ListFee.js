@@ -2,9 +2,11 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useNavigate } from 'react-router-dom';
 import 'swiper/css/bundle';
-import { motion } from 'framer-motion';
 import './ListFee.css';
 import { pricingData } from '../all/allFunction'
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+AOS.init();
 
 const ListFee = () => {
   const navigate = useNavigate()
@@ -13,31 +15,14 @@ const ListFee = () => {
   }
   return (
     <div id='list-fee' className='sliders'>
-      <motion.h1
-      initial={{
-        opacity:0,
-        x:-50
-      }}
-      whileInView={{
-        opacity:1,
-        x:0
-      }}
-      transition={{duration:'0.8'}}
-      viewport={{ once: true }}
-      >Biaya Transaksi</motion.h1>
+      <h1  data-aos="fade-left"
+        data-aos-duration="1000"
+        data-aos-offset="300">Biaya Transaksi</h1>
       <div className='parag'>
-      <motion.p
-      initial={{
-        opacity:0,
-        x:50
-      }}
-      whileInView={{
-        opacity:1,
-        x:0
-      }}
-      transition={{duration:'0.8'}}
-      viewport={{ once: true }}
-      style={{padding:'0 1rem'}}>Kami memberikan tarif biaya termurah se Indonesia, dengan biaya mulai dari 5 ribu.</motion.p>
+      <p  data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="200"
+        data-aos-offset="300" style={{padding:'0 1rem'}}>Kami memberikan tarif biaya termurah se Indonesia, dengan biaya mulai dari 5 ribu.</p>
       </div>
     <Swiper
       spaceBetween={10}

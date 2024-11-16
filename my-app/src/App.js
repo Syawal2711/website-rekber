@@ -14,6 +14,9 @@ import Aktivate from './myprofil/Aktivate';
 import Profil from './myprofil/Profil';
 import ForgotPass from './auth/forgotPass';
 import EditPass from './auth/EditPass';
+import MyProfil from './auth/proff';
+import Trylog from './myprofil/Trylog';
+import ResetPass from './auth/ResetPass';
 
 function App() {
   return (
@@ -33,8 +36,11 @@ function App() {
               <Transaksi/>
             </PrivateRoute>
           }/>
-          <Route path='profil' element={<Profil/>}/>
+          <Route path='/profil' element={<Profil/>}/>
+          <Route path='/profil/myprofil' element={<MyProfil/>}/>
           <Route path='/activate/:token' element={<Aktivate/>}/>
+          <Route path='/reset/password/:token' element={<ResetPass/>}/>
+          <Route path='/trylog/:id/:token' element={<Trylog/>}/>
           <Route path='/transaksisaya' element={<MyTransaksi/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/forgot/password' element={<ForgotPass/>}/>

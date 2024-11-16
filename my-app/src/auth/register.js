@@ -35,7 +35,6 @@ const Register = () => {
             window.turnstile.render(captchaContainer, {
               sitekey: process.env.REACT_APP_SITE_KEY,
               callback: (response) => {
-                console.log('CAPTCHA response:', response); // Debugging line
                 setToken(response); // Store the response token
               },
             });
@@ -76,14 +75,16 @@ const Register = () => {
     try {
       const captchaResponse = await axios.post('/auth/api/verify-captcha', { token });
       if(captchaResponse.data.success) {
-        await axios.post('/auth/register', {
+        const response = await axios.post('/auth/register', {
           email,
           password,
           captchaToken: token, // Kirim token CAPTCHA
         });
+        localStorage.setItem('detectDevice',response.data.detectDevice )
+        console.log(response.data.detectDevice)
         navigate('/login', {
           state: {
-            message: 'Berhasil, cek email Anda untuk mengaktifkan akun Anda',
+            message: 'Berhasil, Cek email Anda untuk mengaktifkan akun Anda',
           },
         });
       }
@@ -99,6 +100,7 @@ const Register = () => {
     } finally {
       setLoading(false);
     }
+  
   };
 
   return (
