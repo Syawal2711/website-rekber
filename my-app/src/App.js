@@ -18,6 +18,7 @@ import MyProfil from './auth/proff';
 import Trylog from './myprofil/Trylog';
 import ResetPass from './auth/ResetPass';
 
+
 function App() {
   return (
     <Router>
@@ -40,7 +41,7 @@ function App() {
           <Route path='/profil/myprofil' element={<MyProfil/>}/>
           <Route path='/activate/:token' element={<Aktivate/>}/>
           <Route path='/reset/password/:token' element={<ResetPass/>}/>
-          <Route path='/trylog/:id/:token' element={<Trylog/>}/>
+          <Route path='/trylog/:token' element={<Trylog/>}/>
           <Route path='/transaksisaya' element={<MyTransaksi/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/forgot/password' element={<ForgotPass/>}/>

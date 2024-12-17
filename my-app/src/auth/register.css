@@ -84,3 +84,20 @@
     margin:1rem 0;
 }
 
+.parent-password {
+    display: flex;
+    position: relative;
+}
+
+.visibilty-pass {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pass {
+    position: absolute;
+    margin-right: 50px;
+    margin-bottom: 10px;
+}
+

@@ -17,7 +17,7 @@ const Method1 = () => {
         </div>
         <div className='img-image'>
             <img src={img2} alt='img2' />
-            <p>2.Pembeli Melakukan Pembyaran  Ke syawalrekber.com</p>
+            <p>2.Pembeli Melakukan Pembayaran  Ke SyawalRekber</p>
         </div>
         <div className='img-image'>
             <img src={img3} alt='img3'/>
@@ -29,7 +29,7 @@ const Method1 = () => {
         </div>
         <div className='img-image'>
             <img src={img5} alt='img5'/>
-            <p>Syawalrekber.com Melakukan Pembayaran Ke Penjual</p>
+            <p>SyawalRekber Melakukan Pembayaran Ke Penjual</p>
         </div>
     </div>
     <div className='Method-button'>

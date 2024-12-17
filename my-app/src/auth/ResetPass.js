@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const ResetPass = () => {
     const { token } = useParams();
@@ -10,6 +12,8 @@ const ResetPass = () => {
     const [errorMsg, setErrorMsg] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [type,setType] = useState('password');
+    const [newtype,setNewType] = useState('password')
     const navigate = useNavigate();
 
     let email, exp;
@@ -23,6 +27,25 @@ const ResetPass = () => {
         console.error('Invalid token', error);
         setErrorMsg('Tautan pengaturan ulang kata sandi tidak valid.');
     }
+
+
+    const handleToggle = () => {
+        if(type === 'password') {
+          setType('text')
+        }
+        else {
+          setType('password')
+        }
+      }
+
+      const newHandleToggle = () => {
+        if(newtype === 'password') {
+          setNewType('text')
+        }
+        else {
+          setNewType('password')
+        }
+      }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -78,23 +101,39 @@ const ResetPass = () => {
                             </div>
                             <div className='input'>
                                 <p>Masukkan Password Baru Anda</p>
+                                <div className='parent-password'>
                                 <input
-                                    type='password'
+                                    type={type}
                                     name='password'
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
+                                <div className='visibilty-pass' onClick={handleToggle}>{type === 'text' ? (
+              <VisibilityIcon className='pass' style={{fill:'#545454'}}/>
+            ) : (
+              <VisibilityOffIcon className='pass' style={{fill:'#545454'}}/>
+            )}
+            </div>
+                                </div>
                             </div>
                             <div className='input'>
                                 <p>Masukkan Kembali Password Baru Anda</p>
+                                <div className='parent-password'>
                                 <input
-                                    type='password'
+                                    type={newtype}
                                     name='confirmPassword'
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
                                 />
+                                <div className='visibilty-pass' onClick={newHandleToggle}>{newtype === 'text' ? (
+              <VisibilityIcon className='pass' style={{fill:'#545454'}}/>
+            ) : (
+              <VisibilityOffIcon className='pass' style={{fill:'#545454'}}/>
+            )}
+            </div>
+                            </div>
                             </div>
                             <div className='submit'>
                                 <button type='submit' disabled={loading}>

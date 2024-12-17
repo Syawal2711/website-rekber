@@ -24,7 +24,6 @@ const RoomTrx = () => {
 
 
   const {transaksiId} = useParams();
-  console.log(transaksiId)
   const navigate = useNavigate();
   const [transaksi,setTransaksi] = useState(null);
   const [status,setStatus] = useState(null)
@@ -41,8 +40,8 @@ const RoomTrx = () => {
   const [changeData,setChangeData] = useState({
     amount:'',
     admin_fee:'',
-    adminFee:'Penjual',
-    identitas:'Ya',
+    adminFee:'',
+    identitas:'',
     alasan:''
   })
 
@@ -70,18 +69,36 @@ const RoomTrx = () => {
             'Authorization': `Bearer ${token}`
           }
         })
+        
         setTransaksi(response.data);
         setSteps(response.data.step);
         setBuyerAgree(response.data.buyerAgreed);
         setSellerAgree(response.data.sellerAgreed);
       } catch (error) {
-        navigate('/login')
+        console.error(error)
+        setTimeout(() => {
+          navigate('/')
+        }, 5000);
       }
     }
   if(token) {
     fetchTransaction();
   }
   }, [token,transaksiId]);
+
+  const invoiceSucces = async () => {
+    try {
+      await axios.patch('/auth/invoiceSucces',{
+        id:transaksi.transaction_id
+      },{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   useEffect(() => {
     const invoiceStatus = async () => {
@@ -95,6 +112,11 @@ const RoomTrx = () => {
           if((response.data === 'PAID' || response.data === 'SETTLED') && transaksi.beridentitas
  === 'Tidak') {
   updateSteps()
+  invoiceSucces()
+          }
+          if((response.data === 'PAID' || response.data === 'SETTLED') && transaksi.beridentitas
+          === 'Ya' && transaksi.Payment === 'Pending') {
+           invoiceSucces()
           }
         }
         catch (error) {
@@ -104,6 +126,7 @@ const RoomTrx = () => {
         invoiceStatus();
   },[transaksi]);
 
+  
   useEffect(() => {
     const payoutStatus = async () => {
       if(transaksi && transaksi.id_payout && transaksi.step === 3) {
@@ -132,6 +155,10 @@ const RoomTrx = () => {
     }
     identyStatus()
   },[transaksi,status])
+
+
+ 
+
   
   const updateState = async (field) => {
     setLoading(true);
@@ -192,14 +219,12 @@ useEffect(() => {
   
   }
   const handleSubmit = async(field,fields,fieldss) => {
-    let email1,email2
     if ((parseFloat(transaksi.amount) === changeData.amount) && 
     (transaksi.admin_paid_by === changeData.adminFee) && 
     (transaksi.beridentitas === changeData.identitas)) {
-     alert('Anda tidak melakukan perubahan apapun pada transksi Anda')
     return
     }
-
+    let email1,email2
     if (field === 'sellerAgreed') {
       email2 = transaksi.buyer_email;
       email1 = transaksi.seller_email;
@@ -235,10 +260,7 @@ useEffect(() => {
       const response = await axios.post('/auth/invoice',{
         id:transaksiId,
         amount: totalPembeli(),
-        email:transaksi.buyer_email,
-        emailSeller:transaksi.seller_email,
-        name:`Rekber ${transaksi.product}`,
-        bergaransi: transaksi.beridentitas
+        name:`Rekber ${transaksi.product}`
 
       }, {
         headers: {
@@ -253,7 +275,7 @@ useEffect(() => {
     }
   }
 
-  const handlePayout = async(e) => {
+  const handlePayout = async() => {
     setLoading(true)
     try {
         await axios.post('/auth/payout', {
@@ -268,6 +290,7 @@ useEffect(() => {
       updateSteps();
       setLoading(false)
     } catch (error) {
+      navigate('/login')
       console.log('Error:',error)
     }
   }
@@ -335,12 +358,11 @@ useEffect(() => {
         }
     }
 
-
-  if(!transaksi) {
-    return <div>Transaksi tidak di temukan</div>
-  }
+  
 
   return (
+   <>
+   {transaksi && (email === transaksi.seller_email || email === transaksi.buyer_email)?(
   <div id='transaksi-saya'>
     <Navbar/>
     <div  className='note' >
@@ -380,7 +402,7 @@ useEffect(() => {
       <Step label="Persetujuan" />
       <Step label="Pembayaran" />
       <Step label="Transaksi" />
-      <Step label={steps === 5 ? "Dibatalkan" :"Pencairan"} />
+      <Step label={steps === 5 ? "Dibatalkan" : "Pencairan"} />
     </Stepper>
     { steps === 0 && (
       <p>Kedua belah pihak harus menyetujui transksi di bawah ini untuk melanjutkan transaksi.</p>
@@ -449,6 +471,7 @@ useEffect(() => {
                 <select name='adminFee' value={changeData.adminFee} onChange={handleChange}>
                   <option value='Penjual'>Penjual</option>
                   <option value='Pembeli'>Pembeli</option>
+                  <option value='50%/50%'>50%/50%</option>
                 </select>
               </div>
               <div>
@@ -462,7 +485,7 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <p>Beridentitas</p>
+                <p>Bergaransi</p>
                 <select name='identitas' value={changeData.identitas} onChange={handleChange}>
                   <option value='Ya'>Ya</option>
                   <option value='Tidak'>Tidak</option>
@@ -517,6 +540,7 @@ useEffect(() => {
                 <select name='adminFee' value={changeData.adminFee} onChange={handleChange}>
                   <option value='Penjual'>Penjual</option>
                   <option value='Pembeli'>Pembeli</option>
+                  <option value='50%/50%'>50%/50%</option>
                 </select>
               </div>
               <div>
@@ -530,10 +554,11 @@ useEffect(() => {
                 />
               </div>
               <div>
-                <p>Beridentitas</p>
+                <p>Bergaransi</p>
                 <select name='identitas' value={changeData.identitas} onChange={handleChange}>
                   <option value='Ya'>Ya</option>
                   <option value='Tidak'>Tidak</option>
+
                 </select>
               </div>
               <div>
@@ -786,8 +811,8 @@ useEffect(() => {
     </div>
     <div className='footer-mytrx'>
       <Footer/>
-    </div>
-    </div>
+    </div></div>):(<div style={{color:'black'}}>Transaksi tidak di temukan</div>)
+    }</>
   )
 }
 

@@ -16,7 +16,7 @@ export const Method = () => {
         <p data-aos="fade-left"
         data-aos-duration="1000"
         data-aos-delay="350"
-        data-aos-offset="300">Kamu masih bingung bagaimana cara rekber di Syawalrekber.com? Jangan khawatir! Kamu bisa menggunakan Syawalrekber.com dengan sangat mudah dan cepat. Berikut ini adalah langkah-langkah yang harus kamu lakukan.</p>
+        data-aos-offset="300">Kamu masih bingung bagaimana cara rekber di Syawalrekber? Jangan khawatir! Kamu bisa menggunakan Syawalrekber dengan sangat mudah dan cepat. Berikut ini adalah langkah-langkah yang harus kamu lakukan.</p>
         </div>
         <div
         className='method-left'>

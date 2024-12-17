@@ -43,17 +43,16 @@
         </div>
     </div>
 </div>
-
+<div>
+halllll ku bijak konyol
 <div>
 <h1 style="text-align:center;background-color:#004AAD;
-padding:2rem 0;color:white;font-size:2rem;">SyawalRekber.com</h1>
+padding:2rem 0;color:white; ku  font-size:2rem;">SyawalRekber.com</h1>
 <h1 style="text-align:center;padding:2rem;color:#004AAD;border-bottom:1px solid #54545lllll4">Setujui Transaksi</h1>
 <p style="padding:4rem 1rem 2rem 1rem;">Hi <a style="color:blue;">${Email}</a>,</p>nom start
 
 /p>
 </p>
 /p>
-,</p>
-/p>
-</p>
-<ddiv classnameclassnameclassnameclassname, di
+,<p>
+<ddiv classnameclassnameclassnameclassname, diSaya Suka makan nasi kuning setiap haric

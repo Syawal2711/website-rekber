@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import './mytrx.css';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Hapus kurung kurawal
+import { jwtDecode } from 'jwt-decode';
 import { formatRupiah } from '../all/allFunction';
 
 const Mytrx = () => {
@@ -69,7 +69,6 @@ const Mytrx = () => {
                         'Authorization': `Bearer ${aksesToken}`,
                     },
                 });
-                console.log(response.data);
                 setAlltrx(response.data);
             } catch (error) {
                 navigate('/login');

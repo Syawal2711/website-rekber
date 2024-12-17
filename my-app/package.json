@@ -22,6 +22,7 @@
     "hamburger-react": "^2.5.1",
     "jwt-decode": "^4.0.0",
     "postcss": "^8.4.41",
+    "primereact": "^10.8.5",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
@@ -30,6 +31,7 @@
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
+    "sweetalert2": "^11.14.5",
     "swiper": "^11.1.4",
     "web-vitals": "^2.1.4"
   },

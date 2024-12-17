@@ -97,10 +97,10 @@ function Home() {
                 <div className='title'>
                     <h3>Jual Atau Beli jasa Atau Produk Dengan Aman</h3>
                     <p>1.Penjual Dan Pembeli Menyetujui Transaksi</p>
-                    <p>2.Pembeli Melakukan Pembyaran Ke Syawalrekber.com</p>
+                    <p>2.Pembeli Melakukan Pembayaran Ke SyawalRekber</p>
                     <p>3.Penjual Dan Pembeli Melakukan Transaksi</p>
-                    <p>4.Pembeli Mengkonfirmasi Produk/Jasanya</p>
-                    <p>5.Syawalrekber.com Melakukan Pembayaran Ke Penjual</p>
+                    <p>4.Pembeli Mengkonfirmasi Terima Barang/Jasanya</p>
+                    <p>5.Syawalrekber Melakukan Pembayaran Ke Penjual</p>
                 </div>
             </div>
         </div>

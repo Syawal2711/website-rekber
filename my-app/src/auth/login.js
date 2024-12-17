@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './register.css';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+        
 import Navbar from '../components/Navbar';
 
 const Login = () => {
@@ -13,12 +16,22 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const captchaRef = useRef(null);
   const [token, setToken] = useState('');
+  const [type,setType] = useState('password');
   
 
+
+
   const detect = localStorage.getItem('detectDevice')
-  console.log(detect)
   const navigate = useNavigate();
 
+  const handleToggle = () => {
+    if(type === 'password') {
+      setType('text')
+    }
+    else {
+      setType('password')
+    }
+  }
 
   useEffect(() => {
     const captchaContainer = captchaRef.current; // Simpan referensi elemen CAPTCHA
@@ -47,7 +60,6 @@ const Login = () => {
         };
       }
     };
-
     loadCaptchaScript();
 
     return () => {
@@ -65,6 +77,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMsg('Email tidak valid. Harap masukkan email yang benar.');
+      setLoading(false);
+      return 
+    }
 
     try {
       // Verifikasi token CAPTCHA
@@ -119,13 +137,21 @@ const Login = () => {
           </div>
           <div>
             <p>Masukkan Password Anda</p>
+            <div className='parent-password'>
             <input
-              type='password'
+              type= {type}
               name='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-            />
+            /> 
+            <div className='visibilty-pass' onClick={handleToggle}>{type === 'text' ? (
+              <VisibilityIcon className='pass' style={{fill:'#545454'}}/>
+            ) : (
+              <VisibilityOffIcon className='pass' style={{fill:'#545454'}}/>
+            )}
+            </div>
+            </div>
           </div>
           <div>
             {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}

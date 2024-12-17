@@ -1,3 +1,5 @@
+import Swal from 'sweetalert2'
+
 export const formatRupiah = (value) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -6,6 +8,13 @@ export const formatRupiah = (value) => {
     }).format(value);
   };
 
+ export const alertsucces = (title,text,icon) => {
+          Swal.fire({
+              title: title,
+              text: text,
+              icon: icon
+            });
+      }
 
 export const calculateAdminFee = (amountValue) => {
         

@@ -12,7 +12,7 @@ const Footer = () => {
         <div id='footer'>
             <div className='footer'>
                 <div style={{ flex: '1' }}>
-                    <h2 style={{ marginBottom: '2rem' }}>Syawalrekber.com</h2>
+                    <h2 style={{ marginBottom: '2rem' }}>SyawalRekber.com</h2>
                     <p style={{ fontWeight: '300', fontSize: '0.9rem', lineHeight: '20px' }}>
                         Jasa Rekening Bersama Terpercaya. Transaksi jarak jauh mudah & aman dari penipuan
                     </p>

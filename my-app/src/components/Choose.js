@@ -10,7 +10,7 @@ function Choose() {
         <div className='choose' style={{width:'60rem',maxWidth:'100%',padding:'1rem',margin:'2rem auto',paddingTop:'5rem',overflowX: 'hidden'}}>
             <h1 data-aos="fade-left"
         data-aos-duration="1000"
-        data-aos-offset="300" style={{color:'black',padding:'0 1rem'}}>Kenapa Memilih Rekber Syawalrekber.com</h1>
+        data-aos-offset="300" style={{color:'black',padding:'0 1rem'}}>Kenapa Memilih Rekber SyawalRekber</h1>
             <div style={{display:'flex',flexWrap:'wrap',padding:'0 2rem'}}>
                 <div style={{flex:'0 0 40%',justifyContent:'center',alignItems:'center'}}>
                 <img data-aos="fade-right"

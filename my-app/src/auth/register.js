@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './register.css';
 import Navbar from '../components/Navbar';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +15,28 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState('');
   const captchaRef = useRef(null);
+  const [type,setType] = useState('password');
+  const [newtype,setNewType] = useState('password')
 
   const navigate = useNavigate();
+
+  const handleToggle = () => {
+    if(type === 'password') {
+      setType('text')
+    }
+    else {
+      setType('password')
+    }
+  }
+
+  const newHandleToggle = () => {
+    if(newtype === 'password') {
+      setNewType('text')
+    }
+    else {
+      setNewType('password')
+    }
+  }
 
   useEffect(() => {
     const captchaContainer = captchaRef.current; // Simpan referensi elemen CAPTCHA
@@ -60,7 +83,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMsg('Email tidak valid. Harap masukkan email yang benar.');
+      setLoading(false);
+      return 
+    }
     if (password.length <= 7) {
       setErrorMsg('Password Anda Terlalu Pendek!');
       setLoading(false);
@@ -124,24 +152,41 @@ const Register = () => {
           </div>
           <div>
             <p>Masukkan Password Anda</p>
+            <div className='parent-password'>
             <input
-              type='password'
+              type={type}
               name='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <div className='visibilty-pass' onClick={handleToggle}>{type === 'text' ? (
+              <VisibilityIcon className='pass' style={{fill:'#545454'}}/>
+            ) : (
+              <VisibilityOffIcon className='pass' style={{fill:'#545454'}}/>
+            )}
+            </div>
+            </div>
           </div>
           <div>
             <p>Konfirmasi Password Anda</p>
+            <div className='parent-password'>
             <input
-              type='password'
+              type={newtype}
               name='confirmPassword'
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-          </div>
+             <div className='visibilty-pass' onClick={newHandleToggle}>{newtype === 'text' ? (
+              <VisibilityIcon className='pass' style={{fill:'#545454'}}/>
+            ) : (
+              <VisibilityOffIcon className='pass' style={{fill:'#545454'}}/>
+            )}
+            </div>
+            </div>
+            </div>
+          
           <div>
             {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
           </div>

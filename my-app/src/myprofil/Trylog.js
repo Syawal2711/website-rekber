@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'
 
 const Trylog = () => {
-  const { id, token } = useParams();
+  const { token } = useParams();
+  const decodedToken = jwtDecode(token);
+  const myToken = decodedToken.deviceId
   const [error, setError] = useState('Memverifikasi Perangkat...');
   const navigate = useNavigate();
+ console.log(decodedToken)
 
   useEffect(() => {
     const trylog = async () => {
       try {
-        const response = await axios.get(`/auth/tes/${id}`, {
+        const response = await axios.get(`/auth/tes/${myToken}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -29,7 +33,7 @@ const Trylog = () => {
     };
 
     trylog(); // Memanggil fungsi untuk melakukan permintaan
-  }, [id, token, navigate]);
+  }, [token, navigate]);
 
   return (
     <p style={{ color: 'black' }}>{error}</p>

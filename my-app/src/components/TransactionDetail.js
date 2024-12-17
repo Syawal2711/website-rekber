@@ -41,9 +41,9 @@ const TransactionDetail = () => {
             setErrorMsg(prev => ({ ...prev, amount: 'Transaksi minimal Rp 10,000' }));
         return;
         }
-        if(originalValue >= 500000000) {
+        if(originalValue >= 50000000) {
             setLoading(false)
-            setErrorMsg(prev => ({...prev, amount: 'Transaksi maksimal Rp 500.000.000'}))
+            setErrorMsg(prev => ({...prev, amount: 'Transaksi maksimal Rp 50.000.000'}))
             return;
         }
 
@@ -62,6 +62,12 @@ const TransactionDetail = () => {
             setErrorMsg(prev => ({...prev, email : 'Anda memasukkan email Anda sendiri'}))
             return;
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailDetail)) {
+      setLoading(false);
+      setErrorMsg(prev => ({...prev,email:'Email tidak valid. Harap masukkan email yang benar.'}));
+      return 
+    }
         setTimeout( async () => {
             try {
                 const response = await axios.post('/auth/transactions',{
@@ -192,7 +198,7 @@ const TransactionDetail = () => {
                    <option value='Penjual'>Penjual</option>
                    <option value='50%/50%'>50%/50%</option>
                    </select>
-                    }</p>
+                    }</p>!
                     <p>{formatRupiah(adminFee)}</p>
                     </div>
                     <div className='item harga-total'>
@@ -211,7 +217,7 @@ const TransactionDetail = () => {
                     {peran === 'Pembeli' && (
                         <>
                         <h4>Detail Penjual</h4>
-                        <p>Masukka Email Penjual</p>
+                        <p>Masukkan Email Penjual</p>
                         <input type='email' value={emailDetail} onChange={(e) => setEmailDetail(e.target.value)} required />
                         <p1 style={{color:'red',padding:'5px 0 0 5px',fontSize:'0.8rem'}}>{msgError.email}</p1>
                         </>

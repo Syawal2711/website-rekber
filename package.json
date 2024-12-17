@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "react-form-stepper": "^2.0.3",
+    "startbootstrap-sb-admin": "^7.0.7",
     "yarn": "^1.22.22"
   },
   "proxy": "http://localhost:3001",
